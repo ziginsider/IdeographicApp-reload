@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_action_search"
+        android:orderInCategory="100"
+        android:title="Search..."
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_badge"
+        android:actionLayout="@layout/feed_card_stack_count"
+        android:icon="@drawable/shape_counter_card_stack"
+        android:orderInCategory="101"
+        android:title="@string/card_stack"
+        app:showAsAction="ifRoom" />
+    
+</menu>
+
+

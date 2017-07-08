@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="400dp">
+
+    <RelativeLayout
+        android:id="@+id/card_stack_top_relative"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/title_card_stack_bg">
+
+        <TextView
+            android:id="@+id/card_stack_top_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:text="444"
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/card_stack_close_icon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_close_card_stack_item" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/card_stack_click_relative"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/card_stack_top_relative"
+        android:background="#FFF2F2F2">
+
+        <RelativeLayout
+            android:id="@+id/card_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="27dp"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:id="@+id/card_tab_names"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="4dp"
+                android:text="NameTab"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/card_stack_topic_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/card_relative_layout"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:clickable="true"
+            android:scrollbars="none">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <Button
+            android:id="@+id/button_card_stack_click"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/card_stack_topic_recycler"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/transparent"
+            android:layout_alignStart="@+id/card_stack_topic_recycler"
+            android:text="" />
+
+    </RelativeLayout>
+</RelativeLayout>

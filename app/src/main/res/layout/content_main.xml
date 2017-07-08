@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="io.github.ziginsider.ideographicapp.MainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+    <Button
+        android:id="@+id/btn_topics_recycler"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="7dp"
+        android:text="Show Topics" />
+
+    <Button
+        android:id="@+id/btn_open_recent"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_topics_recycler"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="7dp"
+        android:text="Open Recent" />
+
+
+
+
+    <Button
+        android:id="@+id/btn_recent_topics"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_open_recent"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show Recent Topics" />
+
+
+    <Button
+        android:id="@+id/btn_favorite_exp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_recent_topics"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show Favorite Exp" />
+
+    <Button
+        android:id="@+id/btn_statistic_topic"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_favorite_exp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show Statistic" />
+
+    <Button
+        android:id="@+id/btn_all_exp"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_statistic_topic"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/ripple_bg_btn_main_activity"
+        android:padding="5dp"
+        android:text="Show All Exp" />
+</RelativeLayout>
