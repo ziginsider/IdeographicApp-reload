@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import io.github.ziginsider.ideographicapp.BuildConfig;
 import model.AllExpChild;
 import model.AllExpParent;
 import model.DoubleItem;
@@ -32,12 +34,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final ArrayList<Expressions> expList = new ArrayList<>();
     private final ArrayList<Topics> topicList = new ArrayList<>();
     private final ArrayList<DoubleItem> doubleItemsList = new ArrayList<>();
-    private final ArrayList<ParentObject> parentObjectsList = new ArrayList<>();
+    //private final ArrayList<ParentObject> parentObjectsList = new ArrayList<>();
 
     String DB_PATH = null;
 
     private final Context dbContext;
     private SQLiteDatabase database;
+
+    long tStart, tEnd, tDiff;
 
     public DatabaseHandler(Context context) {
 
@@ -1084,9 +1088,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Get all expressions (parent)and them transcription, definition and parent topics (child)
     public ArrayList<ParentObject> getAllExpParent() {
 
-        parentObjectsList.clear();
+        tStart = System.currentTimeMillis();
+
+        //parentObjectsList.clear();
 
         SQLiteDatabase dba = this.getReadableDatabase();
+
+//        ArrayList<ParentObject> parentObjectsList = new ArrayList<>(getTotalExp());
+//        ArrayList<ParentObject> parentObjectsList = new ArrayList<>(32523);
+
+        ArrayList<ParentObject> parentObjectsList;
 
         Cursor cursor = dba.query(Constants.TABLE_EXP_NAME + " as EX inner join " +
                         Constants.TABLE_TOPIC_NAME + " as TP on EX." +
@@ -1102,8 +1113,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         //loop through...
         if (cursor.moveToFirst()) {
+            parentObjectsList = new ArrayList<>(cursor.getColumnCount());
             do {
-
 //                Expressions exp = new Expressions();
 //                Topics topic = new Topics();
 //
@@ -1115,7 +1126,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         new AllExpParent(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)),
                                 cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
 
-                List<Object> childList = new ArrayList<>();
+                List<Object> childList = new ArrayList<>(1);
                 String topicText = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
                 childList.add(new AllExpChild("[ˈkɒntɛmˌpleɪtɪv]",
                         "=denoting, concerned with, or inclined to contemplation",
@@ -1125,6 +1136,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             } while (cursor.moveToNext());
 
+            cursor.close();
+            dba.close();
+
+            tEnd = System.currentTimeMillis();
+            tDiff = tEnd - tStart;
+            Log.d("DatabaseHandler", "work time func getAllExpParent() = " + tDiff);
+
+            return  parentObjectsList;
         } else {
 
             Log.d(Constants.LOG_TAG, ">>> Get all exp parent-child items: No matching data");
@@ -1133,7 +1152,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         dba.close();
 
-        return parentObjectsList;
+        return null;
     }
 
 }
