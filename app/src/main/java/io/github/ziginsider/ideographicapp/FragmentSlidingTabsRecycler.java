@@ -123,7 +123,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
                 final FragmentWorkRecycler fragmentWorkRecycler = (FragmentWorkRecycler) adapter.
                         getItem(selectedTabPosition);
 
-                fragmentWorkRecycler.showHideView();
+                //fragmentWorkRecycler.showHideView();
                 //fragmentWorkRecycler.showListView();
 
                 //set Search
@@ -132,6 +132,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
 
                 searchView.closeSearch();
 
+                // TODO: 10.07.2017 search
                 fragmentWorkRecycler.cloneItems();
 
                 searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
@@ -214,8 +215,6 @@ public class FragmentSlidingTabsRecycler extends Fragment {
                     @Override
                     public void onStateChanged(@NonNull View bottomSheet, int newState) {
                         if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-
-                            fragmentWorkRecycler.showHideView();
 
                             InflateBottomSheet();
 
@@ -334,13 +333,13 @@ public class FragmentSlidingTabsRecycler extends Fragment {
 
         if (idTopic == 0) {
 
-            storage.init(getContext());
-            storage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
+            PersistantStorage.init(getContext());
+            PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
 
             adapter.addFragment(fragmentWorkRecycler, Constants.TOPICS_ROOT_NAME, 0);
         } else {
 
-            storage.init(getContext());
+            PersistantStorage.init(getContext());
             Topics topic = dba.getTopicById(idTopic);
             String nameParentTopic;
 
@@ -352,7 +351,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
             }
 
             if (!(nameParentTopic.equals(topic.getTopicText()))) {
-                storage.addProperty(topic.getTopicText(), "nichts");
+                PersistantStorage.addProperty(topic.getTopicText(), "nichts");
             }
             adapter.addFragment(fragmentWorkRecycler, topic.getTopicText(), idTopic);
         }
@@ -361,8 +360,6 @@ public class FragmentSlidingTabsRecycler extends Fragment {
 
         viewPager.setCurrentItem(adapter.getCount() - 1);
         setupTabLayout();
-
-        fragmentWorkRecycler.showHideView();
     }
 
     public void removePage(int position) {

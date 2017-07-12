@@ -49,6 +49,18 @@ public class Constants {
     public static final int IMAGE_TYPE_TOPIC_LEAF = 2;
     public static final int IMAGE_TYPE_EXP = 3;
 
+    //depth
+    public static final int DEPTH_ZERO = 0;
+    public static final int DEPTH_ONE = 1;
+    public static final int DEPTH_TWO = 2;
+    public static final int DEPTH_THREE = 3;
+    public static final int DEPTH_FOUR = 4;
+    public static final int DEPTH_FIVE = 5;
+    public static final int DEPTH_SIX = 6;
+    public static final int DEPTH_SEVEN = 7;
+    public static final int DEPTH_EIGHT = 8;
+    public static final int DEPTH_NINE = 9;
+
 
 
 }

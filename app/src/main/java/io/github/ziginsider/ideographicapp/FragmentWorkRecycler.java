@@ -7,40 +7,31 @@ package io.github.ziginsider.ideographicapp;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
 
 import java.util.ArrayList;
 
-import data.AsyncProvider;
 import data.Constants;
 import data.DatabaseHandler;
-import data.PersistantStorage;
+import data.ParserExp;
 import data.RecyclerExpAdapter;
-import data.RecyclerItemClickListener;
 import data.RecyclerTopicAdapter;
+import data.TimeTracker;
 import model.Expressions;
+import model.ParserData;
 import model.Topics;
 
 public class FragmentWorkRecycler extends Fragment {
@@ -56,20 +47,21 @@ public class FragmentWorkRecycler extends Fragment {
 
     private DatabaseHandler dba;
 
-    public ArrayList<Topics> topicsFromDB;
+    public ArrayList<Topics> topicsFromDB = new ArrayList<>();
     private ArrayList<Topics> mFoundTopics;
     //public int topicsCount;
-    public ArrayList<Expressions> expFromDB;
+    public ArrayList<Expressions> expFromDB = new ArrayList<>();
     private ArrayList<Expressions> mFoundExp;
 
     private FragmentActivity workContext;
-    private PersistantStorage storage;
 
-    private RecyclerTopicAdapter mAdapterTopic;
+    //private RecyclerTopicAdapter mAdapterTopic;
     private RecyclerExpAdapter mAdapterExp;
     android.support.v7.widget.LinearLayoutManager mLayoutManager;
 
-    private AfterItemClickTask afterItemClickTask;
+    //private AfterItemClickTask afterItemClickTask;
+
+    //private int mDepth;
 
     @Nullable
     @Override
@@ -82,15 +74,119 @@ public class FragmentWorkRecycler extends Fragment {
 
         listTopicContentRecycler = (RecyclerView) v.findViewById(R.id.list_topic_content_recycler);
 
-        storage = new PersistantStorage();
-
         mLayoutManager = new LinearLayoutManager(getContext());
         listTopicContentRecycler.setLayoutManager(mLayoutManager);
 
+        setAdapter();
+
         refreshData();
+
+        //////////////////////////////////
+
+        String text = "shinbone==tibia==tibia2=the inner and thicker of the two bones " +
+                "of the human leg between the knee and ankle=formula===берцовая кость===лысая голова";
+
+        String text2 = "tachycardia [ˌtʌkɪ'ka:dɪə]=relatively rapid heart action whether physiological ((as after exercise)) or pathological===тахикардия";
+
+        Log.d("FragmentWorkRecycler", text2);
+//        String[] sArray = text.split("=");
+//        for (int i = 0; i < sArray.length; i++) {
+//            Log.d("FragmentWorkRecycler", ">>>>> element " + String.valueOf(i) + " = " + sArray[i]);
+//        }
+
+        ArrayList<ParserData> result = ParserExp.getFirstParse(text2);
+        for (ParserData content : result) {
+
+            Log.d("FragmentWorkRecycler", "content.getType(): " + content.getType());
+            Log.d("FragmentWorkRecycler", "content = " + content.getText());
+            Log.d("FragmentWorkRecycler", "----------------------");
+
+        }
+
+
+
+
+
+        ////////////////////////////////
 
         return v;
     }
+
+    private void setAdapter() {
+        if (dba.getTopicCountByIdParent(mParentTopicId) > 0) { //work with topics
+            topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
+            setAdapterTopics();
+        } else { //works with exp
+            new GetAsyncExp().execute();// TODO: 12.07.2017 maybe don't async?
+            setAdapterExp();
+        }
+    }
+
+//    private void setItemClickEvent() {
+//        listTopicContentRecycler.addOnItemTouchListener(
+//                new RecyclerItemClickListener(getActivity(), listTopicContentRecycler, new RecyclerItemClickListener.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(View view, int position) {
+//                        if (!topicsFromDB.isEmpty()) {
+//
+//
+////                                //save select item position
+////                                PersistantStorage.init(getContext());
+////                                if (mParentTopicId == 0) {
+////                                    PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
+////                                            mFoundTopics.get(position).getTopicText());
+////                                } else {
+////                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
+////                                            mFoundTopics.get(position).getTopicText());
+////                                }
+//
+//
+//                            FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler =
+//                                    (FragmentSlidingTabsRecycler) workContext.
+//                                            getSupportFragmentManager().
+//                                            findFragmentById(R.id.fragment_sliding_tabs_recycler);
+//                            //if do not have child topics
+//                            if (fragmentSlidingTabsRecycler.getCountTabs() ==
+//                                    (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
+//                                //get child topic
+//                                Topics topic = mFoundTopics.get(position);
+//                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                            } else {
+//                                //remove child topics
+//                                while (fragmentSlidingTabsRecycler.getCountTabs() !=
+//                                        (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
+//                                    fragmentSlidingTabsRecycler.
+//                                            removePage(fragmentSlidingTabsRecycler.
+//                                                    getSelectedTabPosition() + 1);
+//                                }
+//                                //get child topic
+//                                Topics topic = mFoundTopics.get(position);
+//                                //Log.d("Zig", "press topic text = " + topic.get TopicText());
+//                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                            }
+//                        }
+//                        //set recent topic
+//                        afterItemClickTask = new AfterItemClickTask(workContext);
+//                        afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
+//                    }
+//
+//                    @Override
+//                    public void onItemLongClick(View view, int position) {
+//                        // ...
+//                        ScaleAnimation growAnim = new ScaleAnimation(1.0f,
+//                                1.2f,
+//                                1.0f,
+//                                1.2f,
+//                                Animation.RELATIVE_TO_SELF,
+//                                0.5F,
+//                                Animation.RELATIVE_TO_SELF,
+//                                0.5F);
+//                        growAnim.setDuration(300);
+//                        view.startAnimation(growAnim);
+//                        view.setHapticFeedbackEnabled(true);
+//                    }
+//                }));
+//    }
 
     @Override
     public void onAttach(Context context) {
@@ -111,24 +207,20 @@ public class FragmentWorkRecycler extends Fragment {
     private void refreshData() {
 
         Log.d("Zig", "begin function refreshData()");
-
-        topicsFromDB = new ArrayList<Topics>();
-        expFromDB = new ArrayList<Expressions>();
         //get child-topics
-        topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
+//        topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
 
         //get child-expressions
-        expFromDB = dba.getExpByIdParent(mParentTopicId);
+//        expFromDB = dba.getExpByIdParent(mParentTopicId);
 
         //clone fromDB -> foundItems
-        cloneItems();
+        //cloneItems();
 
+        TimeTracker.start();
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab_recycler);
         fabAdd = (FloatingActionButton) getActivity().findViewById(R.id.fab_add_desk);
-
-        showListView();
-        showHideView();
-
+        TimeTracker.end();
+        Log.d("FragmentWorkRecycler", "TimeTracker.howLong(): fab t = " + TimeTracker.howLong());
 
         //tabbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_recycler);
         //appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar_layout_work_recycler);
@@ -136,8 +228,6 @@ public class FragmentWorkRecycler extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
-
             }
 
             @Override
@@ -148,16 +238,15 @@ public class FragmentWorkRecycler extends Fragment {
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
-
-
-
+        //TimeTracker.start();
+        //showListView();
+        //TimeTracker.end();
+        //Log.d("FragmentWorkRecycler", "showListView() in refresh t = " + TimeTracker.howLong());
 
         listTopicContentRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            int mLastFirstVisibleItem = 0;
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -166,20 +255,16 @@ public class FragmentWorkRecycler extends Fragment {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-//                final int currentFirstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
                 ////
                 if (dy > 0) {
                     fabAdd.hide();
                     fab.hide();
-                }
-                else if (dy < 0) {
+                } else if (dy < 0) {
                     fabAdd.show();
                     fab.show();
                 }
 
                 ////
-
 
 
 //                if (currentFirstVisibleItem > this.mLastFirstVisibleItem) {
@@ -205,8 +290,8 @@ public class FragmentWorkRecycler extends Fragment {
 //                this.mLastFirstVisibleItem = currentFirstVisibleItem;
             }
         });
-      Log.d("Zig", "End function RefreshData()");
-  }
+        Log.d("Zig", "End function RefreshData()");
+    }
 
     @Override
     public void onDetach() {
@@ -214,125 +299,124 @@ public class FragmentWorkRecycler extends Fragment {
         dba.close();
     }
 
-    public void showHideView() {
+//    public void showListView() {
+//
+//        // Log.d("Zig", "showListView() begin, mQuerySearch = " + getQuerySearch());
+//
+////        if (topicsFromDB != null) {
+////            if (!topicsFromDB.isEmpty()) {
+//
+//
+//        // создаем адаптер
+//        setAdapterTopics();
+//
+//        //recyclerview item click
+//        listTopicContentRecycler.addOnItemTouchListener(
+//                new RecyclerItemClickListener(getActivity(),
+//                        listTopicContentRecycler,
+//                        new RecyclerItemClickListener.OnItemClickListener() {
+//                            @Override
+//                            public void onItemClick(View view, int position) {
+//
+//                                if (!topicsFromDB.isEmpty()) {
+//
+//                                    //save select item position
+//                                    PersistantStorage.init(getContext());
+//                                    if (mParentTopicId == 0) {
+//
+//                                        PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
+//                                                mFoundTopics.get(position).getTopicText());
+//                                    } else {
+//                                        PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
+//                                                mFoundTopics.get(position).getTopicText());
+//                                    }
+//
+//                                    FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler =
+//                                            (FragmentSlidingTabsRecycler) workContext.
+//                                                    getSupportFragmentManager().
+//                                                    findFragmentById(R.id.fragment_sliding_tabs_recycler);
+//
+//                                    //if do not have child topics
+//                                    if (fragmentSlidingTabsRecycler.getCountTabs() ==
+//                                            (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
+//                                        //get child topic
+//                                        Topics topic = mFoundTopics.get(position);
+//                                        fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//
+//                                    } else {
+//                                        //remove child topics
+//                                        while (fragmentSlidingTabsRecycler.getCountTabs() !=
+//                                                (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
+//                                            fragmentSlidingTabsRecycler.
+//                                                    removePage(fragmentSlidingTabsRecycler.
+//                                                            getSelectedTabPosition() + 1);
+//                                        }
+//                                        //get child topic
+//                                        Topics topic = mFoundTopics.get(position);
+//                                        //Log.d("Zig", "press topic text = " + topic.get TopicText());
+//                                        fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                                    }
+//                                }
+////                     else {
+////
+////                        Expressions exp = mFoundExp.get(position);
+////
+////                        ClipboardManager clipboard = (ClipboardManager) getActivity().
+////                                getSystemService(Context.CLIPBOARD_SERVICE);
+////                        ClipData clip = ClipData.newPlainText(exp.getExpText(), exp.getExpText());
+////                        clipboard.setPrimaryClip(clip);
+////
+////                    }
+//                                //set recent topic
+//                                afterItemClickTask = new AfterItemClickTask(workContext);
+//                                afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
+//                            }
+//
+//                            @Override
+//                            public void onItemLongClick(View view, int position) {
+//                                // ...
+//                                ScaleAnimation growAnim = new ScaleAnimation(1.0f,
+//                                        1.2f,
+//                                        1.0f,
+//                                        1.2f,
+//                                        Animation.RELATIVE_TO_SELF,
+//                                        0.5F,
+//                                        Animation.RELATIVE_TO_SELF,
+//                                        0.5F);
+//                                growAnim.setDuration(300);
+//                                view.startAnimation(growAnim);
+//                                view.setHapticFeedbackEnabled(true);
+//
+//
+//                            }
+//                        }));
+//    } else
+//
+//    {
+//
+//        // создаем адаптер
+//        //mAdapterExp = new RecyclerExpAdapter(expFromDB);
+//        setAdapterExp();
+//        //mAdapterExp.notifyDataSetChanged();
+//    }
+//}
+    //}
 
-//        if(fab != null)
-//        {
-//            if (fab.getTag() == "hide") {
-//                fab.animate().translationY(0).
-//                        setInterpolator(new DecelerateInterpolator()).start();
-//                fab.setTag("show");
-//            }
-//        }
+    private void setAdapterExp() {
+        listTopicContentRecycler.setAdapter(new RecyclerExpAdapter(expFromDB));
     }
 
-    public void showListView() {
+    private void setAdapterTopics() {
 
-        // Log.d("Zig", "showListView() begin, mQuerySearch = " + getQuerySearch());
-
-        if (topicsFromDB != null) {
-            if (!topicsFromDB.isEmpty()) {
-
-
-                // создаем адаптер
-                //
-                mAdapterTopic = new RecyclerTopicAdapter(topicsFromDB);
-                listTopicContentRecycler.setAdapter(mAdapterTopic);
-
-                //recyclerview item click
-                listTopicContentRecycler.addOnItemTouchListener(
-                        new RecyclerItemClickListener(getActivity(),
-                                listTopicContentRecycler,
-                                new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-
-                        if (!topicsFromDB.isEmpty()) {
-
-                            //save select item position
-                            storage.init(getContext());
-                            if (mParentTopicId == 0) {
-
-                                storage.addProperty(Constants.TOPICS_ROOT_NAME,
-                                        mFoundTopics.get(position).getTopicText());
-                            } else {
-                                storage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
-                                        mFoundTopics.get(position).getTopicText());
-                            }
-
-                            FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler =
-                                    (FragmentSlidingTabsRecycler) workContext.
-                                            getSupportFragmentManager().
-                                            findFragmentById(R.id.fragment_sliding_tabs_recycler);
-
-                            //if do not have child topics
-                            if (fragmentSlidingTabsRecycler.getCountTabs() ==
-                                    (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
-                                //get child topic
-                                Topics topic = mFoundTopics.get(position);
-                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
-
-                            } else {
-                                //remove child topics
-                                while (fragmentSlidingTabsRecycler.getCountTabs() !=
-                                        (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
-                                    fragmentSlidingTabsRecycler.
-                                            removePage(fragmentSlidingTabsRecycler.
-                                                    getSelectedTabPosition() + 1);
-                                }
-                                //get child topic
-                                Topics topic = mFoundTopics.get(position);
-                                //Log.d("Zig", "press topic text = " + topic.get TopicText());
-                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
-                            }
-                        }
-//                     else {
-//
-//                        Expressions exp = mFoundExp.get(position);
-//
-//                        ClipboardManager clipboard = (ClipboardManager) getActivity().
-//                                getSystemService(Context.CLIPBOARD_SERVICE);
-//                        ClipData clip = ClipData.newPlainText(exp.getExpText(), exp.getExpText());
-//                        clipboard.setPrimaryClip(clip);
-//
-//                    }
-                        //set recent topic
-                        afterItemClickTask = new AfterItemClickTask(workContext);
-                        afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
-                    }
-
-                    @Override
-                    public void onItemLongClick(View view, int position) {
-                        // ...
-                        ScaleAnimation growAnim = new ScaleAnimation(1.0f,
-                                1.2f,
-                                1.0f,
-                                1.2f,
-                                Animation.RELATIVE_TO_SELF,
-                                0.5F,
-                                Animation.RELATIVE_TO_SELF,
-                                0.5F);
-                        growAnim.setDuration(300);
-                        view.startAnimation(growAnim);
-                        view.setHapticFeedbackEnabled(true);
-
-
-                    }
-                }));
-            } else {
-
-                // создаем адаптер
-                mAdapterExp = new RecyclerExpAdapter(expFromDB);
-                listTopicContentRecycler.setAdapter(mAdapterExp);
-                mAdapterExp.notifyDataSetChanged();
-            }
-        }
+        listTopicContentRecycler.setAdapter(new RecyclerTopicAdapter(topicsFromDB, workContext));
     }
 
     public void showSearchResult(String searchText) {
 
 
         if (searchText != null && !searchText.isEmpty() && topicsFromDB != null) {
+
+            cloneItems();
 
             if (!topicsFromDB.isEmpty()) {
 
@@ -397,7 +481,7 @@ public class FragmentWorkRecycler extends Fragment {
             }
 
         } else {
-            showListView();
+           // setAdapter();
         }
     }
 
@@ -441,46 +525,87 @@ public class FragmentWorkRecycler extends Fragment {
         }
     }
 
-    class AfterItemClickTask extends AsyncTask<Integer, Void, Void> {
+//    private class AfterItemClickTask extends AsyncTask<Integer, Void, Void> {
+//
+//        private Context mContext;
+//
+//        public AfterItemClickTask(Context context) {
+//            mContext = context;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            super.onPostExecute(aVoid);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Integer... params) {
+//
+//            PersistantStorage.init(mContext);
+//            String currentCard;
+//            int currentCardId;
+//
+//
+//            AsyncProvider asyncProvider = new AsyncProvider();
+//            asyncProvider.setRecentTopic(mContext, params[0]);
+//            asyncProvider.setStatisticTopic(mContext, params[0]);
+//
+//            if (PersistantStorage.getProperty(Constants.CURRENT_CARD) == null) {
+//                asyncProvider.setNewCard(mContext);
+//            }
+//
+//            currentCard = PersistantStorage.getProperty(Constants.CURRENT_CARD);
+//            currentCardId = Integer.valueOf(currentCard);
+//            asyncProvider.updateCardByIdCard(mContext, currentCardId, params[0]);
+//
+//            return null;
+//        }
+//    }
 
-        private Context mContext;
+//    private class GetAsyncTopics extends AsyncTask<Void, Void, ArrayList<Topics>> {
+//
+////        private Context mContext;
+//
+////        public GetAsyncTopics(Context context) {
+////            mContext = context;
+////        }
+//
+//        @Override
+//        protected ArrayList<Topics> doInBackground(Void... params) {
+//            return dba.getTopicByIdParentAlphabet(mParentTopicId);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(ArrayList<Topics> items) {
+//            topicsFromDB = items;
+//            //setItemClickEvent();
+//            setAdapterTopics();
+//        }
+//    }
 
-        public AfterItemClickTask(Context context) {
-            mContext = context;
+    private class GetAsyncExp extends AsyncTask<Void, Void, ArrayList<Expressions>> {
+
+//        private Context mContext;
+
+//        public GetAsyncExp(Context context) {
+//            mContext = context;
+//        }
+
+        @Override
+        protected ArrayList<Expressions> doInBackground(Void... params) {
+            ArrayList<Expressions> items = dba.getExpByIdParent(mParentTopicId);
+            return items;
         }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-
-        @Override
-        protected Void doInBackground(Integer... params) {
-
-            PersistantStorage.init(mContext);
-            String currentCard;
-            int currentCardId;
-
-
-
-            AsyncProvider asyncProvider = new AsyncProvider();
-            asyncProvider.setRecentTopic(mContext, params[0]);
-            asyncProvider.setStatisticTopic(mContext, params[0]);
-
-            if (PersistantStorage.getProperty(Constants.CURRENT_CARD) == null) {
-                asyncProvider.setNewCard(mContext);
-            }
-
-            currentCard = PersistantStorage.getProperty(Constants.CURRENT_CARD);
-            currentCardId = Integer.valueOf(currentCard);
-            asyncProvider.updateCardByIdCard(mContext, currentCardId ,params[0]);
-
-            return null;
+        protected void onPostExecute(ArrayList<Expressions> items) {
+            expFromDB = items;
+            setAdapterExp();
         }
     }
 }

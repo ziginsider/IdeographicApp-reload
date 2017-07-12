@@ -1,5 +1,7 @@
 package io.github.ziginsider.ideographicapp;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,10 +26,12 @@ import model.DoubleItem;
 public class ResultTopicSearchActivity extends AppCompatActivity {
 
     //private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private DatabaseHandler dba;
-    private ArrayList<DoubleItem> mDoubleItems;
+    //private RecyclerView.Adapter mAdapter;
+    //private RecyclerView.LayoutManager mLayoutManager;
+    //private DatabaseHandler dba;
+    //private ArrayList<DoubleItem> mDoubleItems;
+
+    private List<ParentObject> mItems = new ArrayList<>();
 
     @ViewById(R.id.recycler_view_result_topic_search)
     FastScrollRecyclerView mRecyclerView;
@@ -39,8 +43,8 @@ public class ResultTopicSearchActivity extends AppCompatActivity {
     @AfterViews
     void init() {
 
-        AllExpDataCreator creator = AllExpDataCreator.get(this);
-        List<ParentObject> parentObjectList = creator.getAll();
+//        AllExpDataCreator creator = AllExpDataCreator.get(this);
+//        List<ParentObject> parentObjectList = creator.getAll();
 
 
         // если мы уверены, что изменения в контенте не изменят размер layout-а RecyclerView
@@ -57,12 +61,46 @@ public class ResultTopicSearchActivity extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        AllExpAdapter adapter = new AllExpAdapter(this, parentObjectList);
+//        AllExpAdapter adapter = new AllExpAdapter(this, parentObjectList);
+//        adapter.setParentClickableViewAnimationDefaultDuration();
+//        adapter.setParentAndIconExpandOnClick(true);
+//
+//        mRecyclerView.setAdapter(adapter);
+
+        new GetAllExpTask(this).execute();
+
+        setupAdapter();
+
+    }
+
+    private class GetAllExpTask extends AsyncTask<Void, Void, List<ParentObject>> {
+
+        private Context mContext;
+
+        public GetAllExpTask(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        protected List<ParentObject> doInBackground(Void... params) {
+            AllExpDataCreator creator = AllExpDataCreator.get(mContext);
+            return creator.getAll();
+        }
+
+        @Override
+        protected void onPostExecute(List<ParentObject> items) {
+            mItems = items;
+            setupAdapter();
+        }
+    }
+
+    private void setupAdapter() {
+
+        AllExpAdapter adapter = new AllExpAdapter(this, mItems);
         adapter.setParentClickableViewAnimationDefaultDuration();
         adapter.setParentAndIconExpandOnClick(true);
 
         mRecyclerView.setAdapter(adapter);
-
     }
 
 

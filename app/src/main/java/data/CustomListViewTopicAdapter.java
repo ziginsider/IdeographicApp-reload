@@ -1,26 +1,16 @@
 package data;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
-import io.github.ziginsider.ideographicapp.FragmentSlidingTabs;
-import io.github.ziginsider.ideographicapp.FragmentWork;
 import io.github.ziginsider.ideographicapp.R;
 
 import model.Topics;
@@ -98,7 +88,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
             holder = new ViewHolder();
 
             holder.topicText = (TextView) row.findViewById(R.id.text_item_topic_content);
-            holder.topicLayout = (RelativeLayout) row.findViewById(R.id.relative_topic_content);
+            holder.topicLayout = (RelativeLayout) row.findViewById(R.id.card_view_topic_content);
 
 
 

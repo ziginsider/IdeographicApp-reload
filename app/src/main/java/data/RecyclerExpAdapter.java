@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import io.github.ziginsider.ideographicapp.R;
 import model.Expressions;
 import model.FavoriteExpressions;
+import model.ParserData;
 
 /**
  * Created by zigin on 26.10.2016.
@@ -33,14 +35,27 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView textExp;
+        private TextView textBody;
+        private TextView textSynonym;
+        private TextView textDefEn;
+        private TextView textDefRu;
+
         private RelativeLayout relativeLayout;
+        private RelativeLayout relativeSynonym;
+        private RelativeLayout relativeExplanatory;
+
         private ImageView imgFavoriteAdd;
 
         public ViewHolder(View view) {
             super(view);
-            this.textExp = (TextView) view.findViewById(R.id.txt_view_exp);
+            this.textBody = (TextView) view.findViewById(R.id.txt_view_body_exp);
+            this.textSynonym = (TextView) view.findViewById(R.id.txt_view_synonym);
+            this.textDefEn = (TextView) view.findViewById(R.id.txt_view_explanatory_en);
+            this.textDefRu = (TextView) view.findViewById(R.id.txt_view_explanatory_ru);
+
             this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_exp_content);
+            this.relativeExplanatory = (RelativeLayout) view.findViewById(R.id.relative_explanatory_body);
+            this.relativeSynonym = (RelativeLayout) view.findViewById(R.id.relative_synonyms_body);
             this.imgFavoriteAdd = (ImageView) view.findViewById(R.id.img_favorite_add);
         }
     }
@@ -57,7 +72,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
                 .inflate(R.layout.adapter_exp_item, parent, false);
 
         //there is programmatically change layout: size, paddings, margin, etc...
-        dbInital = new InitalDatabaseHandler(parent.getContext());
+        dbInital = new InitalDatabaseHandler(parent.getContext()); // TODO: 10.07.2017 singleton obj db conn
 
         //RecyclerExpAdapter.ViewHolder vh = new RecyclerExpAdapter.ViewHolder(v);
 
@@ -71,19 +86,65 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
         final Expressions mCurrentExpItem = mExpList.get(position);
 
-        holder.textExp.setText(mCurrentExpItem.getExpText());
+        //holder.textBody.setText(mCurrentExpItem.getExpText());
 
-        if (position == clickedPosition){
-            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
-        } else {
-            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_exp_new);
-        }
+//        if (position == clickedPosition){
+//            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
+//        } else {
+//            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_exp_new);
+//        }
 
         if (dbInital.isExpInFavoriteList(mCurrentExpItem.getExpId())) {
             holder.imgFavoriteAdd.setImageResource(R.drawable.bookmark_ok);
         } else {
             holder.imgFavoriteAdd.setImageResource(R.drawable.bookmark_no);
         }
+
+        holder.relativeExplanatory.setVisibility(View.GONE);
+        holder.relativeSynonym.setVisibility(View.GONE);
+        holder.textDefRu.setVisibility(View.GONE);
+
+
+        ArrayList<ParserData> parserList = ParserExp.getFirstParse(mCurrentExpItem.getExpText());
+
+        String synonym="";
+        String defEn="";
+        String defRu="";
+
+        for (ParserData text : parserList) {
+
+            int type = text.getType();
+            String content = text.getText();
+
+            Log.d("RecyclerExpAdapter", "+++++++++++++++++");
+            Log.d("RecyclerExpAdapter", "type: " + type);
+            Log.d("RecyclerExpAdapter", "content: " + content);
+
+            if (type == ParserExp.TYPE_BODY) {
+                holder.textBody.setText(content);
+            }
+
+            if (type == ParserExp.TYPE_DEF_ENG) {
+                holder.relativeExplanatory.setVisibility(View.VISIBLE);
+                defEn = defEn + "\n" + content;
+            }
+
+            if (type == ParserExp.TYPE_DEF_RUS) {
+                holder.relativeExplanatory.setVisibility(View.VISIBLE);
+                holder.textDefRu.setVisibility(View.VISIBLE);
+                defRu = defRu + "\n" + content;
+            }
+
+            if (type == ParserExp.TYPE_SYNONYM) {
+                holder.relativeSynonym.setVisibility(View.VISIBLE);
+                synonym = synonym + "\n" + content;
+            }
+        }
+
+        holder.textDefEn.setText(defEn.trim());
+        holder.textDefRu.setText(defRu.trim());
+        holder.textSynonym.setText(synonym.trim());
+
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
 
@@ -93,9 +154,9 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
                 ClipData clip = ClipData.newPlainText(mCurrentExpItem.getExpText(), mCurrentExpItem.getExpText());
                 clipboard.setPrimaryClip(clip);
                 //set the position
-                clickedPosition = position;
+                //clickedPosition = position;
                 //notify the data has changed
-                notifyDataSetChanged();
+                //notifyDataSetChanged();
                 //notifyItemChanged(position);
             }
         });
@@ -104,8 +165,8 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
             @Override
             public boolean onLongClick(View v) {
-                clickedPosition = position;
-                notifyDataSetChanged();
+                //clickedPosition = position;
+                //notifyDataSetChanged();
                 return  true;
             }
         });
@@ -159,7 +220,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        dbInital.close();
+        //dbInital.close();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 }

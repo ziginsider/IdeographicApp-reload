@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +42,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final Context dbContext;
     private SQLiteDatabase database;
 
-    long tStart, tEnd, tDiff;
+    //long tStart, tEnd, tDiff;
 
     public DatabaseHandler(Context context) {
 
@@ -49,9 +50,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.dbContext = context;
         this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
 
-        Log.d(Constants.LOG_TAG, ">>> object DatabaseHandler was created .\n"
-                + "\nDB name = " + Constants.DATABASE_NAME
-                + "\nDB path = " + DB_PATH);
+//        Log.d(Constants.LOG_TAG, ">>> object DatabaseHandler was created .\n"
+//                + "\nDB name = " + Constants.DATABASE_NAME
+//                + "\nDB path = " + DB_PATH);
     }
 
     public void createDataBase() throws IOException {
@@ -654,6 +655,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Get topics by id topic-parent
     public ArrayList<Topics> getTopicByIdParentAlphabet(int idParent) {
 
+        TimeTracker.start();
+
         topicList.clear();
 
         SQLiteDatabase dba = this.getReadableDatabase();
@@ -688,13 +691,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
 
+            TimeTracker.end();
+            Log.d("DatabaseHandler", "getTopicByIdParentAlphabet(): t = " + TimeTracker.howLong());
         } else {
 
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
                     + String.valueOf(idParent));
-
         }
-
         cursor.close();
         dba.close();
 
@@ -1088,7 +1091,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Get all expressions (parent)and them transcription, definition and parent topics (child)
     public ArrayList<ParentObject> getAllExpParent() {
 
-        tStart = System.currentTimeMillis();
+//        tStart = System.currentTimeMillis();
+
+        TimeTracker.start();
 
         //parentObjectsList.clear();
 
@@ -1139,9 +1144,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             cursor.close();
             dba.close();
 
-            tEnd = System.currentTimeMillis();
-            tDiff = tEnd - tStart;
-            Log.d("DatabaseHandler", "work time func getAllExpParent() = " + tDiff);
+            TimeTracker.end();
+//            tEnd = System.currentTimeMillis();
+//            tDiff = tEnd - tStart;
+            Log.d("DatabaseHandler", "work time func getAllExpParent() = " + TimeTracker.howLong());
 
             return  parentObjectsList;
         } else {

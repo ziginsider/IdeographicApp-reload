@@ -24,4 +24,22 @@
 
     <color name="gray">#ebebeb</color>
 
+    <color name="depth_zero">@android:color/holo_red_light</color>
+    <color name="depth_one">@android:color/holo_orange_dark</color>
+    <color name="depth_two">@android:color/holo_orange_light</color>
+    <color name="depth_three">@android:color/holo_green_light</color>
+    <color name="depth_four">@android:color/holo_green_dark</color>
+    <color name="depth_five">#669999</color>
+    <color name="depth_six">@android:color/holo_blue_light</color>
+    <color name="depth_seven">@android:color/holo_blue_dark</color>
+    <color name="depth_eight">@android:color/holo_purple</color>
+    <color name="depth_nine">@android:color/holo_red_dark</color>
+
+
+
+    <color name="color_explanatory_body">#2f8bd8ff</color>
+    <color name="color_explanatory_border">#8085bcf6</color>
+    <color name="color_explanatory_rus">#0652a4</color>
+
+
 </resources>

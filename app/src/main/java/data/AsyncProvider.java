@@ -15,7 +15,7 @@ import model.StatisticTopic;
 
 public class AsyncProvider {
 
-    private PersistantStorage storage;
+    //private PersistantStorage storage;
 
     public AsyncProvider() {
     }

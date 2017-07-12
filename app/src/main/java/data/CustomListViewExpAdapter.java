@@ -74,7 +74,7 @@ public class CustomListViewExpAdapter extends ArrayAdapter<Expressions> {
 
             holder = new ViewExpHolder();
 
-            holder.ExpText = (TextView) row.findViewById(R.id.txt_view_exp);
+            holder.ExpText = (TextView) row.findViewById(R.id.txt_view_body_exp);
 
             row.setTag(holder);
 
