@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -83,7 +82,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 
         //there is programmatically change layout: size, paddings, margin, etc...
 
-        int itemsParentId = mTopicsList.get(0).getTopicParentId();
+        int itemsParentId = mTopicsList.get(0).getParentId();
 
         dba = new DatabaseHandler(parent.getContext()); // TODO: 10.07.2017 singleton obj db connection
         PersistantStorage.init(parent.getContext());
@@ -93,14 +92,14 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 
         } else {
             mNameSelectTopic = PersistantStorage.getProperty(dba.getTopicById(itemsParentId).
-                    getTopicText());
+                    getText());
         }
 
         //get depth
         mDepth = 0;
         int currentId = itemsParentId;
         while (currentId != 0) {
-            currentId = dba.getTopicById(currentId).getTopicParentId();
+            currentId = dba.getTopicById(currentId).getParentId();
             mDepth++;
         }
 
@@ -114,8 +113,8 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
     public void onBindViewHolder(RecyclerTopicAdapter.ViewHolder holder, final int position) {
 
         final Topics mCurrentTopicsItem = mTopicsList.get(position);
-        holder.textTopic.setText(mCurrentTopicsItem.getTopicText());
-        holder.idTopic = mCurrentTopicsItem.getTopicId();
+        holder.textTopic.setText(mCurrentTopicsItem.getText());
+        holder.idTopic = mCurrentTopicsItem.getId();
 
         //holder.itemView.setLongClickable(true);
 
@@ -126,7 +125,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //        }
 
         //background items:
-//        if (mCurrentTopicsItem.getTopicText().equals(mNameSelectTopic)) {
+//        if (mCurrentTopicsItem.getText().equals(mNameSelectTopic)) {
 //            holder.cardViewLayout.setBackgroundResource(R.drawable.bg_current_topic);
 //        } else {
 //            holder.cardViewLayout.setBackgroundResource(R.drawable.ripple_topic_new);
@@ -195,10 +194,10 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //                                PersistantStorage.init(getContext());
 //                                if (mParentTopicId == 0) {
 //                                    PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
-//                                            mFoundTopics.get(position).getTopicText());
+//                                            mFoundTopics.get(position).getText());
 //                                } else {
-//                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
-//                                            mFoundTopics.get(position).getTopicText());
+//                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+//                                            mFoundTopics.get(position).getText());
 //                                }
                     FragmentSlidingTabsRecycler fragment =
                             (FragmentSlidingTabsRecycler) workContext.
@@ -210,7 +209,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
                             (fragment.getSelectedTabPosition() + 1)) {
                         //get child topic
                         Topics topic = mCurrentTopicsItem;
-                        fragment.addPage(topic.getTopicId());
+                        fragment.addPage(topic.getId());
                     } else {
                         //remove child topics
                         while (fragment.getCountTabs() !=
@@ -220,11 +219,11 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
                         //get child topic
                         Topics topic = mCurrentTopicsItem;
                         //Log.d("Zig", "press topic text = " + topic.get TopicText());
-                        fragment.addPage(topic.getTopicId());
+                        fragment.addPage(topic.getId());
                     }
                 }
                 afterItemClickTask = new AfterItemClickTask(workContext);
-                afterItemClickTask.execute(mCurrentTopicsItem.getTopicId());
+                afterItemClickTask.execute(mCurrentTopicsItem.getId());
 
 
 

@@ -11,8 +11,6 @@ import java.util.ArrayList;
 
 import io.github.ziginsider.ideographicapp.R;
 import model.DoubleItem;
-import model.Expressions;
-import model.Topics;
 
 /**
  * Created by zigin on 20.10.2016.
@@ -63,7 +61,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, final int position) {
 
         holder.textExp.setText(mDoubleItems.get(position).getExp().getExpText());
-        holder.textParentTopic.setText(mDoubleItems.get(position).getTopic().getTopicText());
+        holder.textParentTopic.setText(mDoubleItems.get(position).getTopic().getText());
         holder.idParentTopic = mDoubleItems.get(position).getExp().getExpParentId();
 
         //final DoubleItem item = mDoubleItems.get(position);

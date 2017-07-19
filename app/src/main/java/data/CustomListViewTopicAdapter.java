@@ -40,13 +40,13 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
         dba = new DatabaseHandler(getContext());
 
         storage.init(getContext());
-         if (data.get(0).getTopicParentId() == 0) {
+         if (data.get(0).getParentId() == 0) {
 
             mNameSelectTopic = storage.getProperty(Constants.TOPICS_ROOT_NAME);
 
         } else {
-            mNameSelectTopic = storage.getProperty(dba.getTopicById(data.get(0).getTopicParentId()).
-                    getTopicText());
+            mNameSelectTopic = storage.getProperty(dba.getTopicById(data.get(0).getParentId()).
+                    getText());
         }
 
         notifyDataSetChanged();
@@ -103,11 +103,11 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 //            }
 
 
-//            holder.topicId = (TextView) row.findViewById(R.id.topicId);
+//            holder.id = (TextView) row.findViewById(R.id.id);
 //            holder.topicIdParent = (TextView) row.findViewById(R.id.topicIdParent);
-//            holder.topicLabels = (TextView) row.findViewById(R.id.topicLabels);
+//            holder.labels = (TextView) row.findViewById(R.id.labels);
 
-            if (getItem(position).getTopicText().equals(mNameSelectTopic)) {
+            if (getItem(position).getText().equals(mNameSelectTopic)) {
 
                 holder.topicLayout.setBackgroundResource(R.drawable.bg_current_topic);
             } else {
@@ -122,10 +122,10 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 
         holder.topic = getItem(position);
 
-        holder.topicText.setText(holder.topic.getTopicText());
-//        holder.topicIdParent.setText("Parent id = " + String.valueOf(holder.topic.getTopicParentId()));
-//        holder.topicId.setText("Topic id = " + String.valueOf(holder.topic.getTopicId()));
-//        holder.topicLabels.setText("Labels = " + holder.topic.getTopicLabels());
+        holder.topicText.setText(holder.topic.getText());
+//        holder.topicIdParent.setText("Parent id = " + String.valueOf(holder.topic.getParentId()));
+//        holder.id.setText("Topic id = " + String.valueOf(holder.topic.getId()));
+//        holder.labels.setText("Labels = " + holder.topic.getLabels());
 
 
 
@@ -143,7 +143,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 
 //        if (position == ic_intro_3) {
 //
-//            holder.topicText.setText("ffffffffffffff");
+//            holder.text.setText("ffffffffffffff");
 //        }
 
 
@@ -161,7 +161,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
 
         RelativeLayout topicLayout;
 //        TextView topicIdParent;
-//        TextView topicId;
-//        TextView topicLabels;
+//        TextView id;
+//        TextView labels;
     }
 }

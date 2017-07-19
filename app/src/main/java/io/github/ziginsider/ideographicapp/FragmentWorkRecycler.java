@@ -49,19 +49,13 @@ public class FragmentWorkRecycler extends Fragment {
 
     public ArrayList<Topics> topicsFromDB = new ArrayList<>();
     private ArrayList<Topics> mFoundTopics;
-    //public int topicsCount;
     public ArrayList<Expressions> expFromDB = new ArrayList<>();
     private ArrayList<Expressions> mFoundExp;
 
     private FragmentActivity workContext;
 
-    //private RecyclerTopicAdapter mAdapterTopic;
     private RecyclerExpAdapter mAdapterExp;
     android.support.v7.widget.LinearLayoutManager mLayoutManager;
-
-    //private AfterItemClickTask afterItemClickTask;
-
-    //private int mDepth;
 
     @Nullable
     @Override
@@ -80,34 +74,6 @@ public class FragmentWorkRecycler extends Fragment {
         setAdapter();
 
         refreshData();
-
-        //////////////////////////////////
-
-        String text = "shinbone==tibia==tibia2=the inner and thicker of the two bones " +
-                "of the human leg between the knee and ankle=formula===берцовая кость===лысая голова";
-
-        String text2 = "tachycardia [ˌtʌkɪ'ka:dɪə]=relatively rapid heart action whether physiological ((as after exercise)) or pathological===тахикардия";
-
-        Log.d("FragmentWorkRecycler", text2);
-//        String[] sArray = text.split("=");
-//        for (int i = 0; i < sArray.length; i++) {
-//            Log.d("FragmentWorkRecycler", ">>>>> element " + String.valueOf(i) + " = " + sArray[i]);
-//        }
-
-        ArrayList<ParserData> result = ParserExp.getFirstParse(text2);
-        for (ParserData content : result) {
-
-            Log.d("FragmentWorkRecycler", "content.getType(): " + content.getType());
-            Log.d("FragmentWorkRecycler", "content = " + content.getText());
-            Log.d("FragmentWorkRecycler", "----------------------");
-
-        }
-
-
-
-
-
-        ////////////////////////////////
 
         return v;
     }
@@ -134,10 +100,10 @@ public class FragmentWorkRecycler extends Fragment {
 ////                                PersistantStorage.init(getContext());
 ////                                if (mParentTopicId == 0) {
 ////                                    PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
-////                                            mFoundTopics.get(position).getTopicText());
+////                                            mFoundTopics.get(position).getText());
 ////                                } else {
-////                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
-////                                            mFoundTopics.get(position).getTopicText());
+////                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+////                                            mFoundTopics.get(position).getText());
 ////                                }
 //
 //
@@ -150,7 +116,7 @@ public class FragmentWorkRecycler extends Fragment {
 //                                    (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
 //                                //get child topic
 //                                Topics topic = mFoundTopics.get(position);
-//                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                                fragmentSlidingTabsRecycler.addPage(topic.getId());
 //                            } else {
 //                                //remove child topics
 //                                while (fragmentSlidingTabsRecycler.getCountTabs() !=
@@ -162,12 +128,12 @@ public class FragmentWorkRecycler extends Fragment {
 //                                //get child topic
 //                                Topics topic = mFoundTopics.get(position);
 //                                //Log.d("Zig", "press topic text = " + topic.get TopicText());
-//                                fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                                fragmentSlidingTabsRecycler.addPage(topic.getId());
 //                            }
 //                        }
 //                        //set recent topic
 //                        afterItemClickTask = new AfterItemClickTask(workContext);
-//                        afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
+//                        afterItemClickTask.execute(mFoundTopics.get(position).getId());
 //                    }
 //
 //                    @Override
@@ -325,10 +291,10 @@ public class FragmentWorkRecycler extends Fragment {
 //                                    if (mParentTopicId == 0) {
 //
 //                                        PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
-//                                                mFoundTopics.get(position).getTopicText());
+//                                                mFoundTopics.get(position).getText());
 //                                    } else {
-//                                        PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
-//                                                mFoundTopics.get(position).getTopicText());
+//                                        PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+//                                                mFoundTopics.get(position).getText());
 //                                    }
 //
 //                                    FragmentSlidingTabsRecycler fragmentSlidingTabsRecycler =
@@ -341,7 +307,7 @@ public class FragmentWorkRecycler extends Fragment {
 //                                            (fragmentSlidingTabsRecycler.getSelectedTabPosition() + 1)) {
 //                                        //get child topic
 //                                        Topics topic = mFoundTopics.get(position);
-//                                        fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                                        fragmentSlidingTabsRecycler.addPage(topic.getId());
 //
 //                                    } else {
 //                                        //remove child topics
@@ -354,7 +320,7 @@ public class FragmentWorkRecycler extends Fragment {
 //                                        //get child topic
 //                                        Topics topic = mFoundTopics.get(position);
 //                                        //Log.d("Zig", "press topic text = " + topic.get TopicText());
-//                                        fragmentSlidingTabsRecycler.addPage(topic.getTopicId());
+//                                        fragmentSlidingTabsRecycler.addPage(topic.getId());
 //                                    }
 //                                }
 ////                     else {
@@ -369,7 +335,7 @@ public class FragmentWorkRecycler extends Fragment {
 ////                    }
 //                                //set recent topic
 //                                afterItemClickTask = new AfterItemClickTask(workContext);
-//                                afterItemClickTask.execute(mFoundTopics.get(position).getTopicId());
+//                                afterItemClickTask.execute(mFoundTopics.get(position).getId());
 //                            }
 //
 //                            @Override
@@ -432,7 +398,7 @@ public class FragmentWorkRecycler extends Fragment {
 //                for(Topics item:topicsFromDB) {
 //
 //                    //not case sensitive
-//                    if (item.getTopicText().toLowerCase().contains(searchText.toLowerCase())) {
+//                    if (item.getText().toLowerCase().contains(searchText.toLowerCase())) {
 //
 //                        mFoundTopics.add(item);
 //                    }

@@ -9,7 +9,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +17,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -44,7 +40,7 @@ public class FragmentWork extends Fragment {
     //TextView textFooterTopicContent;
     ListView listTopicContent;
     //TextView itemCount;
-    //TextView topicLabels;
+    //TextView labels;
     //TextView textItemCount;
     //TextView textTopicNameBottomSheet;
     //LinearLayout layoutLabels;
@@ -93,7 +89,7 @@ public class FragmentWork extends Fragment {
         listTopicContent = (ListView) v.findViewById(R.id.list_topic_content);
         //textFooterTopicContent = (TextView) v.findViewById(R.id.text_footer_topic_content);
         //itemCount = (TextView) v.findViewById(R.id.item_count);
-        //topicLabels = (TextView) v.findViewById(R.id.topic_labels);
+        //labels = (TextView) v.findViewById(R.id.topic_labels);
         //textItemCount = (TextView) v.findViewById(R.id.text_item_count);
         //layoutLabels = (LinearLayout) v.findViewById(R.id.layout_labels);
         //footerTopicContent = (RelativeLayout) v.findViewById(R.id.footer_topic_content);
@@ -157,7 +153,7 @@ public class FragmentWork extends Fragment {
 //
 //        } else {
 //
-//            textFooterTopicContent.setText(dba_inital.getTopicById(mParentTopicId).getTopicText());
+//            textFooterTopicContent.setText(dba_inital.getTopicById(mParentTopicId).getText());
 //        }
 
         listTopicContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -173,10 +169,10 @@ public class FragmentWork extends Fragment {
                     if (mParentTopicId == 0) {
 
                         storage.addProperty(Constants.TOPICS_ROOT_NAME,
-                                mFoundTopics.get(position).getTopicText());
+                                mFoundTopics.get(position).getText());
                     } else {
-                        storage.addProperty(dba.getTopicById(mParentTopicId).getTopicText(),
-                                mFoundTopics.get(position).getTopicText());
+                        storage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+                                mFoundTopics.get(position).getText());
                     }
 
 
@@ -192,8 +188,8 @@ public class FragmentWork extends Fragment {
                     if (fragmentSlidingTabs.getCountTabs() == (fragmentSlidingTabs.getSelectedTabPosition() + 1) ) {
                         //get child topic
                         Topics topic = mFoundTopics.get(position);
-                        //Log.d("Zig", "press topic text = " + topic.getTopicText());
-                        fragmentSlidingTabs.addPage(topic.getTopicId());
+                        //Log.d("Zig", "press topic text = " + topic.getText());
+                        fragmentSlidingTabs.addPage(topic.getId());
 
                     } else {
 
@@ -204,8 +200,8 @@ public class FragmentWork extends Fragment {
                         }
                         //get child topic
                         Topics topic = mFoundTopics.get(position);
-                        //Log.d("Zig", "press topic text = " + topic.getTopicText());
-                        fragmentSlidingTabs.addPage(topic.getTopicId());
+                        //Log.d("Zig", "press topic text = " + topic.getText());
+                        fragmentSlidingTabs.addPage(topic.getId());
                     }
                 } else {
 
@@ -477,7 +473,7 @@ public class FragmentWork extends Fragment {
 //                for(Topics item:topicsFromDB) {
 //
 //                    //not case sensitive
-//                    if (item.getTopicText().toLowerCase().contains(searchText.toLowerCase())) {
+//                    if (item.getText().toLowerCase().contains(searchText.toLowerCase())) {
 //
 //                        mFoundTopics.add(item);
 //                    }

@@ -100,7 +100,7 @@ public class RecentTopicActivity extends AppCompatActivity
 
                                 idTopicsPageList.add(currentId);
                                 do {
-                                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                                    currentId = dba_data.getTopicById(currentId).getParentId();
                                     idTopicsPageList.add(currentId);
 
                                 } while (currentId != 0);
@@ -181,7 +181,7 @@ public class RecentTopicActivity extends AppCompatActivity
 
             if (currentId != 0) {
                 do {
-                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                    currentId = dba_data.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);

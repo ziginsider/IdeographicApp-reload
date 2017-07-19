@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
@@ -102,7 +101,7 @@ public class StatisticTopicActivity extends AppCompatActivity
 
                                 idTopicsPageList.add(currentId);
                                 do {
-                                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                                    currentId = dba_data.getTopicById(currentId).getParentId();
                                     idTopicsPageList.add(currentId);
 
                                 } while (currentId != 0);
@@ -186,7 +185,7 @@ public class StatisticTopicActivity extends AppCompatActivity
 
             if (currentId != 0) {
                 do {
-                    currentId = dba_data.getTopicById(currentId).getTopicParentId();
+                    currentId = dba_data.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);

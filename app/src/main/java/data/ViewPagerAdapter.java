@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import io.github.ziginsider.ideographicapp.R;
 
@@ -65,6 +66,8 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         mFragmentIdList.add(id);
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
+
+        //addFragmentAnimation(fragment);
     }
 
     public void removeFragment(int position) {
@@ -166,8 +169,18 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     private void destroyFragmentView(ViewGroup container, int position, Object object) {
         FragmentManager manager = ((Fragment) object).getFragmentManager();
         FragmentTransaction trans = manager.beginTransaction();
+
         trans.remove((Fragment) object);
         trans.commit();
+    }
+
+    ///
+    private void addFragmentAnimation(Object object) {
+//        FragmentManager manager = ((Fragment) object).getFragmentManager();
+//        FragmentTransaction trans = manager.beginTransaction();
+//        trans.add((Fragment) object, "ss");
+//        trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//        trans.commit();
     }
 
     private void removeTab(int position) {

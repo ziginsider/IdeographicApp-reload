@@ -118,7 +118,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
     public RecentTopics getRecentTopicByTopicId(int idTopic) {
 
         RecentTopics recentTopic = new RecentTopics();
-        //topic.setTopicParentId(0);
+        //topic.setParentId(0);
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -609,7 +609,7 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
     public CardTopic getCardTopicByTopicId(int idTopic) {
 
         CardTopic cardTopic = new CardTopic();
-        //topic.setTopicParentId(0);
+        //topic.setParentId(0);
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -741,11 +741,11 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
     }
 
 //    //delete a card by id topic
-//    public void deleteCardTopicByIdTopic(int topicId) {
+//    public void deleteCardTopicByIdTopic(int id) {
 //        SQLiteDatabase db = this.getWritableDatabase();
 //
 //        db.delete(Constants.CARD_TABLE_NAME, Constants.CARD_TOPIC_ID + " = ? ",
-//                new String[] {String.valueOf(topicId)});
+//                new String[] {String.valueOf(id)});
 //        db.close();
 //    }
 

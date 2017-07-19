@@ -8,16 +8,16 @@ import java.io.Serializable;
 public class Topics implements Serializable {
 
     private static final long SerialVersionUID = 10L;
-    private String topicText;
-    private int topicParentId;
-    private String topicLabels;
-    private int topicId;
+    public String text;
+    public int parentId;
+    public String labels;
+    public int id;
 
-    public Topics(String topicText, int topicParentId, String topicLabels, int topicId) {
-        this.topicText = topicText;
-        this.topicParentId = topicParentId;
-        this.topicLabels = topicLabels;
-        this.topicId = topicId;
+    public Topics(String topicText, int parentId, String labels, int id) {
+        this.text = topicText;
+        this.parentId = parentId;
+        this.labels = labels;
+        this.id = id;
     }
 
     public Topics() {
@@ -28,35 +28,35 @@ public class Topics implements Serializable {
         return SerialVersionUID;
     }
 
-    public String getTopicText() {
-        return topicText;
+    public String getText() {
+        return text;
     }
 
-    public void setTopicText(String topicText) {
-        this.topicText = topicText;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public int getTopicParentId() {
-        return topicParentId;
+    public int getParentId() {
+        return parentId;
     }
 
-    public void setTopicParentId(int topicParentId) {
-        this.topicParentId = topicParentId;
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
     }
 
-    public String getTopicLabels() {
-        return topicLabels;
+    public String getLabels() {
+        return labels;
     }
 
-    public void setTopicLabels(String topicLabels) {
-        this.topicLabels = topicLabels;
+    public void setLabels(String labels) {
+        this.labels = labels;
     }
 
-    public int getTopicId() {
-        return topicId;
+    public int getId() {
+        return id;
     }
 
-    public void setTopicId(int topicId) {
-        this.topicId = topicId;
+    public void setId(int id) {
+        this.id = id;
     }
 }

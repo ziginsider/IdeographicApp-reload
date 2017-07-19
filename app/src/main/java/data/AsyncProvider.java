@@ -61,7 +61,7 @@ public class AsyncProvider {
             if (totalRecent == 0) {
 
                 currentRecentTopic = new RecentTopics(
-                        dba_data.getTopicById(topicId).getTopicText(),
+                        dba_data.getTopicById(topicId).getText(),
                         topicId,
                         1);
                 dba.addRecentTopic(currentRecentTopic);
@@ -71,7 +71,7 @@ public class AsyncProvider {
                 setWeight = dba.getRecentMaxWeight() + 1;
 
                 currentRecentTopic = new RecentTopics(
-                        dba_data.getTopicById(topicId).getTopicText(),
+                        dba_data.getTopicById(topicId).getText(),
                         topicId,
                         setWeight);
                 dba.addRecentTopic(currentRecentTopic);
@@ -88,7 +88,7 @@ public class AsyncProvider {
                 setWeight = maxTotalRecent;
 
                 currentRecentTopic = new RecentTopics(
-                        dba_data.getTopicById(topicId).getTopicText(),
+                        dba_data.getTopicById(topicId).getText(),
                         topicId,
                         setWeight);
                 dba.addRecentTopic(currentRecentTopic);
@@ -110,7 +110,7 @@ public class AsyncProvider {
         } else {
             StatisticTopic statisticTopic = new StatisticTopic();
 
-            statisticTopic.setTextTopic(dba_data.getTopicById(topicId).getTopicText());
+            statisticTopic.setTextTopic(dba_data.getTopicById(topicId).getText());
             statisticTopic.setIdTopic(topicId);
             statisticTopic.setCounterTopic(1);
 

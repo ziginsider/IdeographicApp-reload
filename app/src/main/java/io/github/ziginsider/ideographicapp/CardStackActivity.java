@@ -2,7 +2,6 @@ package io.github.ziginsider.ideographicapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
 import android.support.v7.widget.RecyclerView;
 
 import com.ckenergy.stackcard.stackcardlayoutmanager.StackCardLayoutManager;
@@ -17,7 +16,6 @@ import data.PersistantStorage;
 import data.RecyclerViewCardStackAdapter;
 import model.CardData;
 import model.CardTopic;
-import model.RecentTopics;
 
 public class CardStackActivity extends BaseCardStackActivity {
 
@@ -210,7 +208,7 @@ public class CardStackActivity extends BaseCardStackActivity {
 
             idTopicsPageList.add(lastCardId);
             do {
-                lastCardId = dbHandler.getTopicById(lastCardId).getTopicParentId();
+                lastCardId = dbHandler.getTopicById(lastCardId).getParentId();
                 idTopicsPageList.add(lastCardId);
 
             } while (lastCardId != 0);

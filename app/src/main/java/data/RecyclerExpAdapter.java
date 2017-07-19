@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,16 +21,17 @@ import model.Expressions;
 import model.FavoriteExpressions;
 import model.ParserData;
 
+import static data.ParserExp.*;
+
 /**
  * Created by zigin on 26.10.2016.
  */
 
 public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.ViewHolder> {
 
-    private int clickedPosition = -1;
+    //private int clickedPosition = -1;
     private ArrayList<Expressions> mExpList;
     private InitalDatabaseHandler dbInital;
-    //private int countItems;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -40,7 +40,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
         private TextView textDefEn;
         private TextView textDefRu;
 
-        private RelativeLayout relativeLayout;
+        //private RelativeLayout relativeLayout;
         private RelativeLayout relativeSynonym;
         private RelativeLayout relativeExplanatory;
 
@@ -53,7 +53,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
             this.textDefEn = (TextView) view.findViewById(R.id.txt_view_explanatory_en);
             this.textDefRu = (TextView) view.findViewById(R.id.txt_view_explanatory_ru);
 
-            this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_exp_content);
+            //this.relativeLayout = (RelativeLayout) view.findViewById(R.id.relative_exp_content);
             this.relativeExplanatory = (RelativeLayout) view.findViewById(R.id.relative_explanatory_body);
             this.relativeSynonym = (RelativeLayout) view.findViewById(R.id.relative_synonyms_body);
             this.imgFavoriteAdd = (ImageView) view.findViewById(R.id.img_favorite_add);
@@ -103,7 +103,7 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
         holder.relativeExplanatory.setVisibility(View.GONE);
         holder.relativeSynonym.setVisibility(View.GONE);
         holder.textDefRu.setVisibility(View.GONE);
-
+        holder.textDefEn.setVisibility(View.GONE);
 
         ArrayList<ParserData> parserList = ParserExp.getFirstParse(mCurrentExpItem.getExpText());
 
@@ -116,35 +116,33 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
             int type = text.getType();
             String content = text.getText();
 
-            Log.d("RecyclerExpAdapter", "+++++++++++++++++");
-            Log.d("RecyclerExpAdapter", "type: " + type);
-            Log.d("RecyclerExpAdapter", "content: " + content);
-
-            if (type == ParserExp.TYPE_BODY) {
-                holder.textBody.setText(content);
-            }
-
-            if (type == ParserExp.TYPE_DEF_ENG) {
-                holder.relativeExplanatory.setVisibility(View.VISIBLE);
-                defEn = defEn + "\n" + content;
-            }
-
-            if (type == ParserExp.TYPE_DEF_RUS) {
-                holder.relativeExplanatory.setVisibility(View.VISIBLE);
-                holder.textDefRu.setVisibility(View.VISIBLE);
-                defRu = defRu + "\n" + content;
-            }
-
-            if (type == ParserExp.TYPE_SYNONYM) {
-                holder.relativeSynonym.setVisibility(View.VISIBLE);
-                synonym = synonym + "\n" + content;
+//            Log.d("RecyclerExpAdapter", "+++++++++++++++++");
+//            Log.d("RecyclerExpAdapter", "type: " + type);
+//            Log.d("RecyclerExpAdapter", "content: " + content);
+            switch (type) {
+                case TYPE_BODY:
+                    holder.textBody.setText(content);
+                    break;
+                case TYPE_DEF_EN:
+                    holder.relativeExplanatory.setVisibility(View.VISIBLE);
+                    holder.textDefEn.setVisibility(View.VISIBLE);
+                    defEn = defEn + "\n" + content;
+                    break;
+                case TYPE_DEF_RU:
+                    holder.relativeExplanatory.setVisibility(View.VISIBLE);
+                    holder.textDefRu.setVisibility(View.VISIBLE);
+                    defRu = defRu + "\n" + content;
+                    break;
+                case TYPE_SYNONYM:
+                    holder.relativeSynonym.setVisibility(View.VISIBLE);
+                    synonym = synonym + "\n" + content;
+                    break;
             }
         }
 
         holder.textDefEn.setText(defEn.trim());
         holder.textDefRu.setText(defRu.trim());
         holder.textSynonym.setText(synonym.trim());
-
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
 

@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
@@ -15,12 +14,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import io.github.ziginsider.ideographicapp.BuildConfig;
 import model.AllExpChild;
 import model.AllExpParent;
 import model.DoubleItem;
@@ -35,7 +31,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private final ArrayList<Expressions> expList = new ArrayList<>();
     private final ArrayList<Topics> topicList = new ArrayList<>();
     private final ArrayList<DoubleItem> doubleItemsList = new ArrayList<>();
-    //private final ArrayList<ParentObject> parentObjectsList = new ArrayList<>();
 
     String DB_PATH = null;
 
@@ -50,9 +45,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         this.dbContext = context;
         this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
 
-//        Log.d(Constants.LOG_TAG, ">>> object DatabaseHandler was created .\n"
-//                + "\nDB name = " + Constants.DATABASE_NAME
-//                + "\nDB path = " + DB_PATH);
     }
 
     public void createDataBase() throws IOException {
@@ -60,17 +52,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         boolean dbExist = checkDataBase();
 
         if (dbExist) {
-
         } else {
-
             this.getReadableDatabase();
-
             try {
-
                 copyDataBase();
-
             } catch (IOException e) {
-
                 throw new Error("Error copying database");
             }
         }
@@ -81,7 +67,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-
             String pathDB = DB_PATH + Constants.DATABASE_NAME;
 
             checkDB = SQLiteDatabase.openDatabase(pathDB,
@@ -112,7 +97,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             output.write(buffer, 0, lenght);
         }
-
         output.flush();
         output.close();
         input.close();
@@ -136,7 +120,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
 //        String UPGRAGE_EXP_TABLE = "DROP TABLE IF EXISTS " + Constants.TABLE_EXP_NAME;
 //        String UPGRAGE_TOPIC_TABLE = "DROP TABLE IF EXISTS " + Constants.TABLE_TOPIC_NAME;
 //
@@ -144,15 +127,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //        db.execSQL(UPGRAGE_TOPIC_TABLE);
 //
 //        onCreate(db);
-
         if (newVersion > oldVersion) {
-
             try {
-
                 copyDataBase();
-
             } catch (IOException e) {
-
                 Log.d(Constants.LOG_TAG, "Coping database error", e);
             }
         }
@@ -274,13 +252,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        values.put(Constants.TOPIC_TEXT, topic.getTopicText());
-        values.put(Constants.TOPIC_PARENT_ID, topic.getTopicParentId());
-        values.put(Constants.TOPIC_LABELS, topic.getTopicLabels());
+        values.put(Constants.TOPIC_TEXT, topic.getText());
+        values.put(Constants.TOPIC_PARENT_ID, topic.getParentId());
+        values.put(Constants.TOPIC_LABELS, topic.getLabels());
 
         dba.insert(Constants.TABLE_TOPIC_NAME, null, values);
 
-        Log.d(Constants.LOG_TAG, ">>> Insert topic = " + topic.getTopicText());
+        Log.d(Constants.LOG_TAG, ">>> Insert topic = " + topic.getText());
 
         dba.close();
     }
@@ -299,7 +277,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
                 Expressions exp = new Expressions();
 
                 exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
@@ -335,15 +312,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 Constants.TOPIC_LABELS}, null, null, null, null, Constants.TOPIC_TEXT);
 
         //loop through...
+
+
         if (cursor.moveToFirst()) {
             do {
-
                 Topics topic = new Topics();
 
-                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
-                topic.setTopicParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
-                topic.setTopicLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
-                topic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+                topic.setText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+                topic.setParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
+                topic.setLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
+                topic.setId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
 
                 topicList.add(topic);
 
@@ -365,7 +343,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public Topics getTopicById(int idTopic) {
 
         Topics topic = new Topics();
-        //topic.setTopicParentId(0);
+        //topic.setParentId(0);
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -384,17 +362,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
 
-            topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
-            topic.setTopicParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
-            topic.setTopicLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
-            topic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+            topic.setText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+            topic.setParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
+            topic.setLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
+            topic.setId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
 
         } else {
 
-            //Toast.makeText(getApplicationContext(), " No matching data", Toast.LENGTH_SHORT).show();
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id: No matching data");
         }
-
 
         cursor.close();
         dba.close();
@@ -406,7 +382,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public String getTopicNameById(int idTopic) {
 
         String name = "";
-        //topic.setTopicParentId(0);
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -425,19 +400,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             name = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
 
         } else {
-
-            //Toast.makeText(getApplicationContext(), " No matching data", Toast.LENGTH_SHORT).show();
             Log.d(Constants.LOG_TAG, ">>> Get Topic name by id: No matching data");
         }
-
-
         cursor.close();
         dba.close();
 
         return name;
     }
-
-
 
     //Get exp by id
     public Expressions getExpById(int idExp) {
@@ -459,21 +428,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 null);
 
         if (cursor.moveToFirst()) {
-
             exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
             exp.setExpParentId(cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
             exp.setExpId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
-
         } else {
-
-            //Toast.makeText(getApplicationContext(), " No matching data", Toast.LENGTH_SHORT).show();
             Log.d(Constants.LOG_TAG, ">>> Get Exp by id: No matching data");
         }
-
-
         cursor.close();
         dba.close();
-
         return exp;
     }
 
@@ -515,13 +477,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
                 Topics topic = new Topics();
 
-                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
-                topic.setTopicParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
-                topic.setTopicLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
-                topic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+                topic.setText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+                topic.setParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
+                topic.setLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
+                topic.setId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
 
                 topicList.add(topic);
 
@@ -530,10 +491,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
 
         } else {
-
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
                     + String.valueOf(idParent));
-
         }
 
         cursor.close();
@@ -546,7 +505,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<String> getTopicNamesByIdParent(int idParent) {
 
         ArrayList<String> names = new ArrayList<>();
-        String topic;
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -564,19 +522,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
-                topic = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
-                names.add(topic);
+                names.add(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
 
             } while (cursor.moveToNext());
 
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
-
         } else {
-
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
                     + String.valueOf(idParent));
-
         }
 
         cursor.close();
@@ -588,8 +541,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     //Get topics IDs by id topic-parent
     public ArrayList<Integer> getTopicIdsByIdParent(int idParent) {
 
-        ArrayList<Integer> identificators = new ArrayList<>();
-        int id;
+        ArrayList<Integer> listId = new ArrayList<>();
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -607,25 +559,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
-                id = cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID));
-                identificators.add(id);
+                listId.add(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
 
             } while (cursor.moveToNext());
 
             Log.d(Constants.LOG_TAG, ">>> Get Topic IDs by id topics parent: Success");
-
         } else {
-
             Log.d(Constants.LOG_TAG, ">>> Get Topic IDs by id topics parent: No matching data. Id Parent = "
                     + String.valueOf(idParent));
-
         }
 
         cursor.close();
         dba.close();
 
-        return identificators;
+        return listId;
     }
 
     //Get topics count by id topic-parent
@@ -677,24 +624,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
                 Topics topic = new Topics();
 
-                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
-                topic.setTopicParentId(cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID)));
-                topic.setTopicLabels(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS)));
-                topic.setTopicId(cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID)));
+                topic.text = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT));
+                topic.parentId = cursor.getInt(cursor.getColumnIndex(Constants.TOPIC_PARENT_ID));
+                topic.labels = cursor.getString(cursor.getColumnIndex(Constants.TOPIC_LABELS));
+                topic.id = cursor.getInt(cursor.getColumnIndex(Constants.KEY_ID));
 
                 topicList.add(topic);
 
             } while (cursor.moveToNext());
 
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
-
             TimeTracker.end();
             Log.d("DatabaseHandler", "getTopicByIdParentAlphabet(): t = " + TimeTracker.howLong());
         } else {
-
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
                     + String.valueOf(idParent));
         }
@@ -709,7 +653,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<String> getExpNamesByIdParent(int idParent) {
 
         ArrayList<String> names = new ArrayList<>();
-        String name;
 
         SQLiteDatabase dba = this.getReadableDatabase();
 
@@ -726,16 +669,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
-                name = cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT));
-                names.add(name);
+                names.add(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
 
             } while (cursor.moveToNext());
 
             Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: Success");
-
         } else {
-
             Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: No matching data");
         }
 
@@ -767,7 +706,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         //loop through...
         if (cursor.moveToFirst()) {
             do {
-
                 Expressions exp = new Expressions();
 
                 exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
@@ -779,9 +717,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
 
             Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: Success");
-
         } else {
-
             Log.d(Constants.LOG_TAG, ">>> Get Expressions by id topics parent: No matching data");
         }
 
@@ -1029,7 +965,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                     if (!labelsIDSplit[i].equals(""))
                         listLabels.add(getTopicById(Integer.valueOf(labelsIDSplit[i])).
-                                getTopicText());
+                                getText());
                 }
             }
         }
@@ -1069,7 +1005,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
                 exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
                 exp.setExpParentId(cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
-                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+                topic.setText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
 
                 DoubleItem doubleItem = new DoubleItem(exp, topic);
 
@@ -1125,7 +1061,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 //
 //                exp.setExpText(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)));
 //                exp.setExpParentId(cursor.getInt(cursor.getColumnIndex(Constants.EXP_PARENT_ID)));
-//                topic.setTopicText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
+//                topic.setText(cursor.getString(cursor.getColumnIndex(Constants.TOPIC_TEXT)));
 
                 AllExpParent titleParent =
                         new AllExpParent(cursor.getString(cursor.getColumnIndex(Constants.EXP_TEXT)),

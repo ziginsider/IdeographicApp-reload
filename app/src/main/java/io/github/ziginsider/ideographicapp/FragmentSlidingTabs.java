@@ -1,7 +1,6 @@
 package io.github.ziginsider.ideographicapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,18 +8,14 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
@@ -30,7 +25,6 @@ import data.Constants;
 import data.DatabaseHandler;
 import data.PersistantStorage;
 import data.ViewPagerAdapter;
-import model.Topics;
 
 
 /**
@@ -372,18 +366,18 @@ public class FragmentSlidingTabs extends Fragment {
             textLabels.setText(sb);
 
             //parent topic
-            if (dba.getTopicById(idTopic).getTopicParentId() != 0) {
+            if (dba.getTopicById(idTopic).getParentId() != 0) {
 
                 textParentTopicNameBottomSheet.setText(dba.getTopicById
-                    (dba.getTopicById(idTopic).getTopicParentId())
-                    .getTopicText());
+                    (dba.getTopicById(idTopic).getParentId())
+                    .getText());
 
             } else {
 
                 textParentTopicNameBottomSheet.setText(Constants.TOPICS_ROOT_NAME);
             }
 
-            textTopicNameBottomSheet.setText(dba.getTopicById(idTopic).getTopicText());
+            textTopicNameBottomSheet.setText(dba.getTopicById(idTopic).getText());
             textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
             textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
         }
@@ -406,9 +400,9 @@ public class FragmentSlidingTabs extends Fragment {
         } else {
 
             storage.init(getContext());
-            storage.addProperty(dba.getTopicById(idTopic).getTopicText(), "nichts");
+            storage.addProperty(dba.getTopicById(idTopic).getText(), "nichts");
 
-            adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getTopicText(), idTopic);
+            adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getText(), idTopic);
         }
         adapter.notifyDataSetChanged();
         if (adapter.getCount() > 0) tabLayout.setupWithViewPager(viewPager);

@@ -36,9 +36,6 @@ import data.Constants;
 import data.DatabaseHandler;
 import data.InitalDatabaseHandler;
 import data.PersistantStorage;
-import model.CardData;
-import model.RecentTopics;
-import model.Topics;
 
 @WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
 @EActivity(R.layout.activity_work_recycler)
@@ -274,7 +271,7 @@ public class WorkActivityRecycler extends AppCompatActivity
 
             if (currentId != 0) {
                 do {
-                    currentId = dbHandler.getTopicById(currentId).getTopicParentId();
+                    currentId = dbHandler.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
