@@ -25,7 +25,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
     private ArrayList<Topics> TopicsList = new ArrayList<>();
     private PersistantStorage storage;
     private String mNameSelectTopic;
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dba;
     //private int mSelectItem;
     //private boolean mFlagSelect;
     //FragmentSlidingTabs fragmentSlidingTabs;
@@ -37,7 +37,7 @@ public class CustomListViewTopicAdapter extends ArrayAdapter<Topics> {
         activity = act;
         TopicsList = data;
         storage = new PersistantStorage();
-        dba = new DatabaseHandler(getContext());
+        dba = new DatabaseHandlerExternal(getContext());
 
         storage.init(getContext());
          if (data.get(0).getParentId() == 0) {

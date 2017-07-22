@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import io.github.ziginsider.ideographicapp.R;
 import model.FavoriteExpressions;
 
@@ -24,8 +25,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
     private ArrayList<FavoriteExpressions> favoriteExpList;
     //private int clickedPosition;
-    private DatabaseHandler dba;
-    private InitalDatabaseHandler dbInital;
+    private DatabaseHandlerExternal dbConnExternal;
+    private DatabaseHandlerInner dbConnInner;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -47,6 +48,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
     public FavoriteAdapter(ArrayList<FavoriteExpressions> favoriteItems) {
         this.favoriteExpList = favoriteItems;
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
     }
 
     @Override
@@ -56,8 +59,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
                 .inflate(R.layout.adapter_favorite_exp, parent, false);
 
         //there is programmatically change layout: size, paddings, margin, etc...
-        dba = new DatabaseHandler(parent.getContext());
-        dbInital = new InitalDatabaseHandler(parent.getContext());
+//        dbConnExternal = new DatabaseHandlerExternal(parent.getContext());
+//        dbConnInner = new DatabaseHandlerInner(parent.getContext());
 
         return new FavoriteAdapter.ViewHolder(v);
     }
@@ -70,7 +73,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         final FavoriteExpressions mCurrentFavoriteItem = favoriteExpList.get(position);
 
         holder.textExp.setText(mCurrentFavoriteItem.getTextExp());
-        holder.textParentTopic.setText(dba.
+        holder.textParentTopic.setText(dbConnExternal.
            getTopicById(mCurrentFavoriteItem.
                 getIdParentTopic()).
                 getText());
@@ -81,7 +84,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 //            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_bg_exp);
 //        }
 
-        if (dbInital.isExpInFavoriteList(mCurrentFavoriteItem.getIdExp())) {
+        if (dbConnInner.isExpInFavoriteList(mCurrentFavoriteItem.getIdExp())) {
             holder.imgFavoriteExp.setImageResource(R.drawable.bookmark_ok);
         } else {
             holder.imgFavoriteExp.setImageResource(R.drawable.bookmark_no);
@@ -109,7 +112,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
 
                 try {
-                    dbInital.deleteFavoriteExp(mCurrentFavoriteItem.getIdExp());
+                    dbConnInner.deleteFavoriteExp(mCurrentFavoriteItem.getIdExp());
 
                     favoriteExpList.remove(position);
                     notifyItemRemoved(position);
@@ -133,8 +136,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        dba.close();
-        dbInital.close();
+        dbConnExternal.close();
+        dbConnInner.close();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 }

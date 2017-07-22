@@ -5,7 +5,6 @@ package io.github.ziginsider.ideographicapp;
  */
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 
 import data.AsyncProvider;
 import data.Constants;
-import data.DatabaseHandler;
+import data.DatabaseHandlerExternal;
 import data.PersistantStorage;
 import data.ViewPagerAdapter;
 import model.Topics;
@@ -53,9 +52,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
 
     ArrayList<String> listTopicLabels;
 
-    private DatabaseHandler dba;
-
-    private PersistantStorage storage;
+    private DatabaseHandlerExternal dbConnExternal;
 
     private int selectedTabPosition;
 
@@ -68,7 +65,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sliding_tabs_recycler, container, false);
         getIDs(view);
 
-        storage = new PersistantStorage();
+        //storage = new PersistantStorage();
 
         setEvents();
         return view;
@@ -77,7 +74,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        dba = new DatabaseHandler(context);
+        dbConnExternal = new DatabaseHandlerExternal(context);
     }
 
     private void getIDs(View view) {
@@ -273,8 +270,8 @@ public class FragmentSlidingTabsRecycler extends Fragment {
             textLabels.setText("");
 
 
-            textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
-            textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
+            textNumberOfSubtopics.setText(String.valueOf(dbConnExternal.getTopicCountByIdParent(idTopic)));
+            textNumberOfExp.setText(String.valueOf(dbConnExternal.getExpCountByIdParent(idTopic)));
 
         } else {
 
@@ -292,7 +289,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
             textParentTopicNameBottomSheet.setVisibility(View.VISIBLE);
 
             //labels
-            listTopicLabels = dba.getTopicLabels(idTopic);
+            listTopicLabels = dbConnExternal.getTopicLabels(idTopic);
 
             StringBuilder sb = new StringBuilder();
             for (String s : listTopicLabels) {
@@ -304,10 +301,10 @@ public class FragmentSlidingTabsRecycler extends Fragment {
             textLabels.setText(sb);
 
             //parent topic
-            if (dba.getTopicById(idTopic).getParentId() != 0) {
+            if (dbConnExternal.getTopicById(idTopic).getParentId() != 0) {
 
-                textParentTopicNameBottomSheet.setText(dba.getTopicById
-                        (dba.getTopicById(idTopic).getParentId())
+                textParentTopicNameBottomSheet.setText(dbConnExternal.getTopicById
+                        (dbConnExternal.getTopicById(idTopic).getParentId())
                         .getText());
 
             } else {
@@ -315,9 +312,9 @@ public class FragmentSlidingTabsRecycler extends Fragment {
                 textParentTopicNameBottomSheet.setText(Constants.TOPICS_ROOT_NAME);
             }
 
-            textTopicNameBottomSheet.setText(dba.getTopicById(idTopic).getText());
-            textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
-            textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
+            textTopicNameBottomSheet.setText(dbConnExternal.getTopicById(idTopic).getText());
+            textNumberOfSubtopics.setText(String.valueOf(dbConnExternal.getTopicCountByIdParent(idTopic)));
+            textNumberOfExp.setText(String.valueOf(dbConnExternal.getExpCountByIdParent(idTopic)));
         }
     }
 
@@ -339,14 +336,14 @@ public class FragmentSlidingTabsRecycler extends Fragment {
         } else {
 
             PersistantStorage.init(getContext());
-            Topics topic = dba.getTopicById(idTopic);
+            Topics topic = dbConnExternal.getTopicById(idTopic);
             String nameParentTopic;
 
             if (topic.getParentId() == 0) {
                 nameParentTopic = Constants.TOPICS_ROOT_NAME;
             } else {
 
-                nameParentTopic = dba.getTopicById(topic.getParentId()).getText();
+                nameParentTopic = dbConnExternal.getTopicById(topic.getParentId()).getText();
             }
 
             if (!(nameParentTopic.equals(topic.getText()))) {
@@ -378,7 +375,7 @@ public class FragmentSlidingTabsRecycler extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        dba.close();
+        dbConnExternal.close();
     }
 
     class AfterNewCardClickTask extends AsyncTask<Integer, Void, Void> {

@@ -1,21 +1,16 @@
 package data;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import io.github.ziginsider.ideographicapp.R;
-import model.FavoriteExpressions;
 import model.StatisticTopic;
 
 /**
@@ -26,8 +21,8 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
 
     private ArrayList<StatisticTopic> statisticTopicList;
     //private int clickedPosition;
-    private DatabaseHandler dba;
-    //private InitalDatabaseHandler dbInital;
+    private DatabaseHandlerExternal dbConnExternal;
+    //private DatabaseHandlerInner dbInital;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -49,6 +44,7 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
 
     public StatisticAdapter(ArrayList<StatisticTopic> statisticTopicItems) {
         this.statisticTopicList = statisticTopicItems;
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
     }
 
     @Override
@@ -58,9 +54,8 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
                 .inflate(R.layout.adapter_statistic_topic, parent, false);
 
         //there is programmatically change layout: size, paddings, margin, etc...
-        dba = new DatabaseHandler(parent.getContext());
-        //dbInital = new InitalDatabaseHandler(parent.getContext());
-
+//        dbConnExternal = new DatabaseHandlerExternal(parent.getContext());
+        //dbInital = new DatabaseHandlerInner(parent.getContext());
         StatisticAdapter.ViewHolder vh = new StatisticAdapter.ViewHolder(v);
 
         return vh;
@@ -78,19 +73,17 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
         holder.textCounterTopic.setText("Number of Clicks = " +
                 String.valueOf(mCurrentStatItem.getCounterTopic()));
 
-
 //        if (position == clickedPosition){
 //            holder.relativeLayout.setBackgroundResource(R.drawable.bg_current_topic);
 //        } else {
 //            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_topic_new);
 //        }
 
-        if (dba.getTopicCountByIdParent(holder.idTopic) > 0) {
+        if (dbConnExternal.getTopicCountByIdParent(holder.idTopic) > 0) {
             holder.imgStatisticTopic.setImageResource(R.drawable.ic_chevron_color_right);
         } else {
             holder.imgStatisticTopic.setImageResource(R.drawable.ic_three_circle_green);
         }
-
     }
 
 
@@ -101,7 +94,7 @@ public class StatisticAdapter extends RecyclerView.Adapter<StatisticAdapter.View
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        dba.close();
+        dbConnExternal.close();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 }

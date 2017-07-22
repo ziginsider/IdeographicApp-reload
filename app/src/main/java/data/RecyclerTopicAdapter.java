@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import io.github.ziginsider.ideographicapp.FragmentSlidingTabsRecycler;
 import io.github.ziginsider.ideographicapp.R;
 import model.Topics;
@@ -26,11 +27,11 @@ import static data.Constants.*;
 public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdapter.ViewHolder> {
 
 
-    //private DatabaseHandler dba;
+    //private DatabaseHandlerExternal dbConnExternal;
     //private int clickedPosition;
     private ArrayList<Topics> mTopicsList;
     private String mNameSelectTopic;
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dbConnExternal;
     //public static OnItemClickListener listener;
 
     FragmentActivity workContext;
@@ -72,6 +73,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
         this.mTopicsList = topics;
         this.workContext = workContext;
         //this.fragment = fragment;
+
     }
 
     @Override
@@ -84,25 +86,25 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 
         int itemsParentId = mTopicsList.get(0).getParentId();
 
-        dba = new DatabaseHandler(parent.getContext()); // TODO: 10.07.2017 singleton obj db connection
-        PersistantStorage.init(parent.getContext());
-        if (itemsParentId == 0) {
+        //dbConnExternal = new DatabaseHandlerExternal(parent.getContext());
 
-            mNameSelectTopic = PersistantStorage.getProperty(Constants.TOPICS_ROOT_NAME);
-
-        } else {
-            mNameSelectTopic = PersistantStorage.getProperty(dba.getTopicById(itemsParentId).
-                    getText());
-        }
-
+//        PersistantStorage.init(parent.getContext());
+//        if (itemsParentId == 0) {
+//
+//            mNameSelectTopic = PersistantStorage.getProperty(Constants.TOPICS_ROOT_NAME);
+//
+//        } else {
+//            mNameSelectTopic = PersistantStorage.getProperty(dbConnExternal.getTopicById(itemsParentId).
+//                    getText());
+//        }
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
         //get depth
         mDepth = 0;
         int currentId = itemsParentId;
         while (currentId != 0) {
-            currentId = dba.getTopicById(currentId).getParentId();
+            currentId = dbConnExternal.getTopicById(currentId).getParentId();
             mDepth++;
         }
-
 
         return new RecyclerTopicAdapter.ViewHolder(v);
     }
@@ -132,7 +134,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //        }
 
         //chevron type:
-        if (dba.getTopicCountByIdParent(holder.idTopic) > 0) {
+        if (dbConnExternal.getTopicCountByIdParent(holder.idTopic) > 0) {
             holder.imageNextItem.setImageResource(R.drawable.ic_chevron_color_right);
         } else {
             holder.imageNextItem.setImageResource(R.drawable.ic_three_circle_green);
@@ -196,7 +198,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //                                    PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
 //                                            mFoundTopics.get(position).getText());
 //                                } else {
-//                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+//                                    PersistantStorage.addProperty(dbConnExternal.getTopicById(mParentTopicId).getText(),
 //                                            mFoundTopics.get(position).getText());
 //                                }
                     FragmentSlidingTabsRecycler fragment =
@@ -226,7 +228,6 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
                 afterItemClickTask.execute(mCurrentTopicsItem.getId());
 
 
-
             }
         });
 
@@ -240,7 +241,6 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 //            }
 //        });
 
-        //TODO what is it??
     }
 
     @Override
@@ -263,7 +263,7 @@ public class RecyclerTopicAdapter extends RecyclerView.Adapter<RecyclerTopicAdap
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        //dba.close();
+        //dbConnExternal.close();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 

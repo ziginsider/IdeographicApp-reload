@@ -21,7 +21,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 //    private ArrayList<Expressions> mExpList;
 //    private ArrayList<String> mTopicNameList;
     private ArrayList<DoubleItem> mDoubleItems;
-    //private DatabaseHandler dba;
+    //private DatabaseHandlerExternal dba;
     private int clickedPosition;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

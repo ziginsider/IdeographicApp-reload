@@ -18,7 +18,7 @@ import model.StatisticTopic;
  * Created by zigin on 06.11.2016.
  */
 
-public class InitalDatabaseHandler extends SQLiteOpenHelper {
+public class DatabaseHandlerInner extends SQLiteOpenHelper {
 
     private final ArrayList<RecentTopics> recentTopicsList = new ArrayList<>();
     private final ArrayList<FavoriteExpressions> favoriteExpList = new ArrayList<>();
@@ -26,8 +26,8 @@ public class InitalDatabaseHandler extends SQLiteOpenHelper {
     private final ArrayList<CardTopic> cardTopicList = new ArrayList<>();
 
 
-    public InitalDatabaseHandler(Context context) {
-        super(context, Constants.INITAL_DATABASE_NAME, null, Constants.INITAL_DATABASE_VERSION);
+    public DatabaseHandlerInner(Context context) {
+        super(context, Constants.DATABASE_INNER_NAME, null, Constants.DATABASE_INNER_VERSION);
     }
 
     @Override

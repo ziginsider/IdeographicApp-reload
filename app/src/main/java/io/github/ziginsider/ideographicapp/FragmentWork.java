@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import data.Constants;
 import data.CustomListViewExpAdapter;
 import data.CustomListViewTopicAdapter;
-import data.DatabaseHandler;
+import data.DatabaseHandlerExternal;
 import data.PersistantStorage;
 import model.Expressions;
 import model.Topics;
@@ -55,7 +55,7 @@ public class FragmentWork extends Fragment {
     private CustomListViewTopicAdapter topicAdapter;
     private CustomListViewExpAdapter ExpAdapter;
 
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dba;
 
     public ArrayList<Topics> topicsFromDB;
     private ArrayList<Topics> mFoundTopics;
@@ -112,7 +112,7 @@ public class FragmentWork extends Fragment {
     public void onAttach(Context context) {
         workContext = (FragmentActivity) context;
         super.onAttach(context);
-        dba = new DatabaseHandler(context);
+        dba = new DatabaseHandlerExternal(context);
         //workContext.getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
     }
 
@@ -153,7 +153,7 @@ public class FragmentWork extends Fragment {
 //
 //        } else {
 //
-//            textFooterTopicContent.setText(dba_inital.getTopicById(mParentTopicId).getText());
+//            textFooterTopicContent.setText(dbConnInner.getTopicById(mParentTopicId).getText());
 //        }
 
         listTopicContent.setOnItemClickListener(new AdapterView.OnItemClickListener() {

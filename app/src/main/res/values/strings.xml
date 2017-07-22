@@ -13,4 +13,7 @@
     <string name="app_intro">Intro</string>
     <string name="title_activity_work_two">WorkTwoActivity</string>
     <string name="card_stack">card stack</string>
+
+    <string name="dialog_success_title">Success</string>
+    <string name="dialog_success_booking_message">Check your email for a booking confirmation.We\'ll see you soon!</string>
 </resources>

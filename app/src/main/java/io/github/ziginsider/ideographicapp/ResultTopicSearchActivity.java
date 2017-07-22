@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -18,9 +17,6 @@ import java.util.List;
 
 import data.AllExpAdapter;
 import data.AllExpDataCreator;
-import data.DatabaseHandler;
-import data.RecyclerAdapter;
-import model.DoubleItem;
 
 @EActivity(R.layout.activity_result_topic_search)
 public class ResultTopicSearchActivity extends AppCompatActivity {
@@ -28,7 +24,7 @@ public class ResultTopicSearchActivity extends AppCompatActivity {
     //private RecyclerView mRecyclerView;
     //private RecyclerView.Adapter mAdapter;
     //private RecyclerView.LayoutManager mLayoutManager;
-    //private DatabaseHandler dba;
+    //private DatabaseHandlerExternal dbConnInner;
     //private ArrayList<DoubleItem> mDoubleItems;
 
     private List<ParentObject> mItems = new ArrayList<>();

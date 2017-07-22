@@ -15,23 +15,25 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.App;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.Constants;
-import data.DatabaseHandler;
+import data.DatabaseHandlerExternal;
+import data.DatabaseHandlerInner;
 import data.FavoriteAdapter;
-import data.InitalDatabaseHandler;
 import model.FavoriteExpressions;
 
 @EActivity(R.layout.activity_favorite_exp)
 public class FavoriteExpActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    InitalDatabaseHandler dba;
-    DatabaseHandler dba_data;
+    DatabaseHandlerInner dbConnInner;
+    DatabaseHandlerExternal dbConnExternal;
     ArrayList<FavoriteExpressions> favoriteExpList;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -67,10 +69,14 @@ public class FavoriteExpActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        dba = new InitalDatabaseHandler(this);
-        dba_data = new DatabaseHandler(this);
+//        dbConnInner = new DatabaseHandlerInner(this);
+//        dbConnExternal = new DatabaseHandlerExternal(this);
+
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
+
         //get all expressions
-        favoriteExpList = dba.getFavoriteExpList();
+        favoriteExpList = dbConnInner.getFavoriteExpList();
 
         // если мы уверены, что изменения в контенте не изменят размер layout-а RecyclerView
         // передаем параметр true - это увеличивает производительность
@@ -151,13 +157,13 @@ public class FavoriteExpActivity extends AppCompatActivity
             ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
             idTopicsPageList.clear();
 
-            int currentId = dba.getIdTopicTopRecentTopics();
+            int currentId = dbConnInner.getIdTopicTopRecentTopics();
 
             idTopicsPageList.add(currentId);
 
             if (currentId != 0) {
                 do {
-                    currentId = dba_data.getTopicById(currentId).getParentId();
+                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
@@ -220,8 +226,8 @@ public class FavoriteExpActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        dba.close();
-        dba_data.close();
+//        dbConnInner.close();
+//        dbConnExternal.close();
         super.onDestroy();
     }
 }

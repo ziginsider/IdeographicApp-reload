@@ -31,10 +31,11 @@ import org.androidannotations.annotations.WindowFeature;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.AsyncProvider;
 import data.Constants;
-import data.DatabaseHandler;
-import data.InitalDatabaseHandler;
+import data.DatabaseHandlerExternal;
+import data.DatabaseHandlerInner;
 import data.PersistantStorage;
 
 @WindowFeature({Window.FEATURE_ACTION_BAR_OVERLAY})
@@ -42,8 +43,8 @@ import data.PersistantStorage;
 public class WorkActivityRecycler extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    InitalDatabaseHandler dba;
-    DatabaseHandler dbHandler;
+    DatabaseHandlerInner dbConnInner;
+    DatabaseHandlerExternal dbConnExternal;
 
     boolean doubleBackToExitPressedOnce = false;
     static Button buttonBadgeCardStack;
@@ -71,10 +72,13 @@ public class WorkActivityRecycler extends AppCompatActivity
     @AfterViews
     void init() {
 
-        dba = new InitalDatabaseHandler(this); //setup inital db
+//        dbConnInner = new DatabaseHandlerInner(this); //setup inital db
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
+
 
         //Setup DB
-        dbHandler = new DatabaseHandler(this);
+//        dbConnExternal = new DatabaseHandlerExternal(this);
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
 
         //setup view
         setSupportActionBar(toolbar);
@@ -124,12 +128,12 @@ public class WorkActivityRecycler extends AppCompatActivity
 
 
 //        try {
-//            dbHandler.createDataBase();
+//            dbConnExternal.createDataBase();
 //        } catch (IOException ioe) {
 //            throw new Error("Unable to create database");
 //        }
 //        try {
-//            dbHandler.openDataBase();
+//            dbConnExternal.openDataBase();
 //        } catch (Exception e) {
 //            //throw sqle;
 //            Log.d("Main", "Error open db", e);
@@ -265,13 +269,13 @@ public class WorkActivityRecycler extends AppCompatActivity
             ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
             idTopicsPageList.clear();
 
-            int currentId = dba.getIdTopicTopRecentTopics();
+            int currentId = dbConnInner.getIdTopicTopRecentTopics();
 
             idTopicsPageList.add(currentId);
 
             if (currentId != 0) {
                 do {
-                    currentId = dbHandler.getTopicById(currentId).getParentId();
+                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
@@ -339,8 +343,9 @@ public class WorkActivityRecycler extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        dba.close();
-        dbHandler.close();
+//        dbConnInner.close();
+//        dbConnExternal.close();
+        AppController.getInstance().closeSQLiteConnects();
         super.onDestroy();
     }
 

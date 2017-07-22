@@ -5,10 +5,6 @@ import android.content.Context;
 import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import model.AllExpParent;
-import model.DoubleItem;
 
 /**
  * Created by zigin on 12.12.2016.
@@ -16,13 +12,13 @@ import model.DoubleItem;
 
 public class AllExpDataCreator {
 
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dba;
     static AllExpDataCreator _allExpDataCreator;
     ArrayList<ParentObject> mParentList;
 
     public  AllExpDataCreator(Context context) {
 
-        dba = new DatabaseHandler(context);
+        dba = new DatabaseHandlerExternal(context);
 
         this.mParentList = new ArrayList<>();
 

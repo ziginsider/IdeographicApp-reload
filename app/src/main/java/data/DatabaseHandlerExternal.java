@@ -26,7 +26,7 @@ import model.Topics;
 /**
  * Created by zigin on 20.09.2016.
  */
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class DatabaseHandlerExternal extends SQLiteOpenHelper {
 
     private final ArrayList<Expressions> expList = new ArrayList<>();
     private final ArrayList<Topics> topicList = new ArrayList<>();
@@ -39,9 +39,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     //long tStart, tEnd, tDiff;
 
-    public DatabaseHandler(Context context) {
+    public DatabaseHandlerExternal(Context context) {
 
-        super(context, Constants.DATABASE_NAME, null, Constants.DATABASE_VERSION);
+        super(context, Constants.DATABASE_EXTERNAL_NAME, null, Constants.DATABASE_EXTERNAL_VERSION);
         this.dbContext = context;
         this.DB_PATH = "/data/data/" + context.getPackageName() + "/" + "databases/";
 
@@ -67,7 +67,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase checkDB = null;
 
         try {
-            String pathDB = DB_PATH + Constants.DATABASE_NAME;
+            String pathDB = DB_PATH + Constants.DATABASE_EXTERNAL_NAME;
 
             checkDB = SQLiteDatabase.openDatabase(pathDB,
                     null,
@@ -87,8 +87,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     private void copyDataBase() throws IOException {
 
-        InputStream input = dbContext.getAssets().open(Constants.DATABASE_NAME);
-        String outFileName = DB_PATH + Constants.DATABASE_NAME;
+        InputStream input = dbContext.getAssets().open(Constants.DATABASE_EXTERNAL_NAME);
+        String outFileName = DB_PATH + Constants.DATABASE_EXTERNAL_NAME;
         OutputStream output = new FileOutputStream(outFileName);
         byte[] buffer = new byte[10];
         int lenght;
@@ -104,7 +104,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void openDataBase() throws SQLiteException {
 
-        String path = DB_PATH + Constants.DATABASE_NAME;
+        String path = DB_PATH + Constants.DATABASE_EXTERNAL_NAME;
         database = SQLiteDatabase.openDatabase(path, null, SQLiteDatabase.OPEN_READONLY);
     }
 
@@ -637,7 +637,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: Success");
             TimeTracker.end();
-            Log.d("DatabaseHandler", "getTopicByIdParentAlphabet(): t = " + TimeTracker.howLong());
+            Log.d("DatabaseHandlerExternal", "getTopicByIdParentAlphabet(): t = " + TimeTracker.howLong());
         } else {
             Log.d(Constants.LOG_TAG, ">>> Get Topic by id topics parent: No matching data. Id Parent = "
                     + String.valueOf(idParent));
@@ -1083,7 +1083,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             TimeTracker.end();
 //            tEnd = System.currentTimeMillis();
 //            tDiff = tEnd - tStart;
-            Log.d("DatabaseHandler", "work time func getAllExpParent() = " + TimeTracker.howLong());
+            Log.d("DatabaseHandlerExternal", "work time func getAllExpParent() = " + TimeTracker.howLong());
 
             return  parentObjectsList;
         } else {

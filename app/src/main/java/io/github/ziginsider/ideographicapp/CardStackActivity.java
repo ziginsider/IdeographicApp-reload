@@ -9,9 +9,10 @@ import com.ckenergy.stackcard.stackcardlayoutmanager.StackCardPostLayout;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.Constants;
-import data.DatabaseHandler;
-import data.InitalDatabaseHandler;
+import data.DatabaseHandlerExternal;
+import data.DatabaseHandlerInner;
 import data.PersistantStorage;
 import data.RecyclerViewCardStackAdapter;
 import model.CardData;
@@ -19,8 +20,8 @@ import model.CardTopic;
 
 public class CardStackActivity extends BaseCardStackActivity {
 
-    InitalDatabaseHandler dba;
-    DatabaseHandler dbHandler;
+    DatabaseHandlerInner dbConnInner;
+    DatabaseHandlerExternal dbConnExternal;
 
     String currentCard;
 
@@ -31,8 +32,11 @@ public class CardStackActivity extends BaseCardStackActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_stack);
 
-        dba = new InitalDatabaseHandler(this);
-        dbHandler = new DatabaseHandler(this);
+//        dbConnInner = new DatabaseHandlerInner(this);
+//        dbConnExternal = new DatabaseHandlerExternal(this);
+
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.card_stack_list);
 
@@ -140,15 +144,15 @@ public class CardStackActivity extends BaseCardStackActivity {
 
     private ArrayList<CardData> getCardsData() {
         ArrayList<CardData> data = new ArrayList<>();
-        ArrayList<CardTopic> cardTopic = dba.getCardTopicList();
+        ArrayList<CardTopic> cardTopic = dbConnInner.getCardTopicList();
 
         for (CardTopic card: cardTopic) {
             ArrayList<String> childTopicsNames = new ArrayList<>();
             ArrayList<Integer> childTopicsImgType = new ArrayList<>();
-            childTopicsNames = dbHandler.getTopicNamesByIdParent(card.getTopicId());
+            childTopicsNames = dbConnExternal.getTopicNamesByIdParent(card.getTopicId());
 
             if (childTopicsNames.isEmpty()) {
-                childTopicsNames = dbHandler.getExpNamesByIdParent(card.getTopicId());
+                childTopicsNames = dbConnExternal.getExpNamesByIdParent(card.getTopicId());
 
                 for (int i = 0; i < childTopicsNames.size(); i++) {
                     childTopicsImgType.add(Constants.IMAGE_TYPE_EXP);
@@ -161,12 +165,12 @@ public class CardStackActivity extends BaseCardStackActivity {
                         childTopicsImgType));
             } else {
 
-                ArrayList<Integer> idTopicsChild = dbHandler
+                ArrayList<Integer> idTopicsChild = dbConnExternal
                         .getTopicIdsByIdParent(card.getTopicId());
 
                 for (int id : idTopicsChild) {
 
-                    if (dbHandler.getTopicByIdParent(id).isEmpty()) {
+                    if (dbConnExternal.getTopicByIdParent(id).isEmpty()) {
                         childTopicsImgType.add(Constants.IMAGE_TYPE_TOPIC_LEAF);
                     } else  {
                         childTopicsImgType.add(Constants.IMAGE_TYPE_TOPIC_BRANCH);
@@ -185,8 +189,8 @@ public class CardStackActivity extends BaseCardStackActivity {
 
     @Override
     protected void onDestroy() {
-        dba.close();
-        dbHandler.close();
+//        dbConnInner.close();
+//        dbConnExternal.close();
         super.onDestroy();
     }
 
@@ -197,7 +201,7 @@ public class CardStackActivity extends BaseCardStackActivity {
             super.onBackPressed();
         } else {
 
-            int lastCardId = dba.getCardLastId();
+            int lastCardId = dbConnInner.getCardLastId();
 
             ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
             idTopicsPageList.clear();
@@ -208,7 +212,7 @@ public class CardStackActivity extends BaseCardStackActivity {
 
             idTopicsPageList.add(lastCardId);
             do {
-                lastCardId = dbHandler.getTopicById(lastCardId).getParentId();
+                lastCardId = dbConnExternal.getTopicById(lastCardId).getParentId();
                 idTopicsPageList.add(lastCardId);
 
             } while (lastCardId != 0);

@@ -23,10 +23,11 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.AsyncProvider;
 import data.Constants;
-import data.DatabaseHandler;
-import data.InitalDatabaseHandler;
+import data.DatabaseHandlerExternal;
+import data.DatabaseHandlerInner;
 import data.RecyclerItemClickListener;
 import data.StatisticAdapter;
 import model.StatisticTopic;
@@ -35,8 +36,8 @@ import model.StatisticTopic;
 public class StatisticTopicActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    InitalDatabaseHandler dba_inital;
-    DatabaseHandler dba_data;
+    DatabaseHandlerInner dbConnInner;
+    DatabaseHandlerExternal dbConnExternal;
     ArrayList<StatisticTopic> statisticTopicList;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -67,10 +68,13 @@ public class StatisticTopicActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        dba_inital = new InitalDatabaseHandler(this);
-        dba_data = new DatabaseHandler(this);
+//        dbConnInner = new DatabaseHandlerInner(this);
+//        dbConnExternal = new DatabaseHandlerExternal(this);
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
+
         //get all expressions
-        statisticTopicList = dba_inital.getStatisticTopicList();
+        statisticTopicList = dbConnInner.getStatisticTopicList();
 
         // если мы уверены, что изменения в контенте не изменят размер layout-а RecyclerView
         // передаем параметр true - это увеличивает производительность
@@ -101,7 +105,7 @@ public class StatisticTopicActivity extends AppCompatActivity
 
                                 idTopicsPageList.add(currentId);
                                 do {
-                                    currentId = dba_data.getTopicById(currentId).getParentId();
+                                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                                     idTopicsPageList.add(currentId);
 
                                 } while (currentId != 0);
@@ -179,13 +183,13 @@ public class StatisticTopicActivity extends AppCompatActivity
             ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
             idTopicsPageList.clear();
 
-            int currentId = dba_inital.getIdTopicTopRecentTopics();
+            int currentId = dbConnInner.getIdTopicTopRecentTopics();
 
             idTopicsPageList.add(currentId);
 
             if (currentId != 0) {
                 do {
-                    currentId = dba_data.getTopicById(currentId).getParentId();
+                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
@@ -277,8 +281,8 @@ public class StatisticTopicActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        dba_inital.close();
-        dba_data.close();
+//        dbConnInner.close();
+//        dbConnExternal.close();
         super.onDestroy();
     }
 }

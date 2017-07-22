@@ -15,9 +15,12 @@ import android.widget.Toast;
 
 import com.ckenergy.stackcard.stackcardlayoutmanager.ItemTouchHelperCallBack;
 
+import org.androidannotations.annotations.App;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import app.AppController;
 import io.github.ziginsider.ideographicapp.R;
 import io.github.ziginsider.ideographicapp.WorkActivityRecycler_;
 import model.CardData;
@@ -32,8 +35,8 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
     //int[] mImgs = {R.drawable.img_1,R.drawable.img_2,R.drawable.img_3,R.drawable.img_4};
     private  ArrayList<CardData> mCardList;
 
-    private InitalDatabaseHandler dba;
-    private DatabaseHandler dba_data;
+    private DatabaseHandlerInner dbConnInner;
+    private DatabaseHandlerExternal dbConnExternal;
 
     Context context;
 
@@ -58,15 +61,17 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
             //card.mImgRes = mImgs[i% mImgs.length];
             cards.add(card);
         }
+
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
     }
 
     @Override
     public CardStackViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-
+//
         context = parent.getContext();
-        dba = new InitalDatabaseHandler(context);
-        dba_data = new DatabaseHandler(context);
-
+//        dbConnInner = new DatabaseHandlerInner(context);
+//        dbConnExternal = new DatabaseHandlerExternal(context);
 
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_stack_view, parent, false);
         return new CardStackViewHolder(view);
@@ -129,7 +134,7 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
 
                 idTopicsPageList.add(currentId);
                 do {
-                    currentId = dba_data.getTopicById(currentId).getParentId();
+                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
@@ -159,10 +164,10 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
         PersistantStorage.init(context);
         int currentCardId = Integer.valueOf(PersistantStorage.getProperty(Constants.CURRENT_CARD));
         if (mCurrentCardItem.getCardUniqueId() == currentCardId) {
-            int newCurrentId = dba.getCardLastId();
+            int newCurrentId = dbConnInner.getCardLastId();
             PersistantStorage.addProperty(Constants.CURRENT_CARD, String.valueOf(newCurrentId));
         }
-        dba.deleteCardTopicByIdCardTopic(mCurrentCardItem.getCardUniqueId());
+        dbConnInner.deleteCardTopicByIdCardTopic(mCurrentCardItem.getCardUniqueId());
 
         int currentCountCards = 1;
         //PersistantStorage.init(context);
@@ -201,8 +206,8 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        dba_data.close();
-        dba.close();
+        //dbConnExternal.close();
+        //dbConnInner.close();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 }

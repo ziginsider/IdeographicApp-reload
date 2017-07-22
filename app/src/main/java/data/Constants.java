@@ -4,8 +4,8 @@ package data;
  * Created by zigin on 20.09.2016.
  */
 public class Constants {
-    public static final String DATABASE_NAME = "Ideographic.db3";
-    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_EXTERNAL_NAME = "Ideographic.db3";
+    public static final int DATABASE_EXTERNAL_VERSION = 1;
     public static final String TABLE_EXP_NAME = "Expressions";
     public static final String EXP_TEXT = "ExText";
     public static final String EXP_PARENT_ID = "IdTopic";
@@ -23,8 +23,8 @@ public class Constants {
     public static final String BUNDLE_ID_TOPIC = "idtopicbundle";
     public static final String EXTRA_TOPICS_OPEN_TABS = "topicopentabs";
 
-    public static final String INITAL_DATABASE_NAME = "Initaldb.db3";
-    public static final int INITAL_DATABASE_VERSION = 1;
+    public static final String DATABASE_INNER_NAME = "Initaldb.db3";
+    public static final int DATABASE_INNER_VERSION = 1;
 
     public static final String RECENT_TABLE_NAME = "RecentTopics";
     public static final String RECENT_TOPIC_TEXT = "TextTopic";

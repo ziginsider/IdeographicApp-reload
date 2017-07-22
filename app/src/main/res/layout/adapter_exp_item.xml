@@ -38,38 +38,10 @@
             android:layout_marginTop="2dp"
             android:src="@drawable/bookmark_no" />
 
-        <RelativeLayout
-            android:id="@+id/relative_explanatory_body"
-            android:layout_below="@id/txt_view_body_exp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_explanatory"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="30dp"
-            android:paddingTop="3dp"
-            android:paddingRight="4dp"
-            android:paddingLeft="4dp"
-            android:paddingBottom="3dp"
-            android:layout_marginRight="30dp">
 
-            <TextView
-                android:id="@+id/txt_view_explanatory_en"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="This is explanatory english" />
-
-            <TextView
-                android:id="@+id/txt_view_explanatory_ru"
-                android:layout_below="@id/txt_view_explanatory_en"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                android:textColor="@color/color_explanatory_rus"
-                android:text="This is explanatory russian" />
-        </RelativeLayout>
         <RelativeLayout
             android:id="@+id/relative_synonyms_body"
-            android:layout_below="@id/relative_explanatory_body"
+            android:layout_below="@id/txt_view_body_exp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -96,5 +68,36 @@
                 android:textColor="#000000"/>
 
         </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relative_explanatory_body"
+            android:layout_below="@id/relative_synonyms_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_explanatory"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:paddingTop="3dp"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:paddingBottom="3dp"
+            android:layout_marginRight="30dp">
+
+            <TextView
+                android:id="@+id/txt_view_explanatory_en"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="This is explanatory english" />
+
+            <TextView
+                android:id="@+id/txt_view_explanatory_ru"
+                android:layout_below="@id/txt_view_explanatory_en"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:textColor="@color/color_explanatory_rus"
+                android:text="This is explanatory russian" />
+        </RelativeLayout>
+
     </RelativeLayout>
 </android.support.v7.widget.CardView>

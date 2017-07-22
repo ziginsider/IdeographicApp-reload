@@ -25,13 +25,11 @@ import com.melnykov.fab.FloatingActionButton;
 import java.util.ArrayList;
 
 import data.Constants;
-import data.DatabaseHandler;
-import data.ParserExp;
+import data.DatabaseHandlerExternal;
 import data.RecyclerExpAdapter;
 import data.RecyclerTopicAdapter;
 import data.TimeTracker;
 import model.Expressions;
-import model.ParserData;
 import model.Topics;
 
 public class FragmentWorkRecycler extends Fragment {
@@ -45,7 +43,7 @@ public class FragmentWorkRecycler extends Fragment {
 
     TabLayout tabLayout;
 
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dbConnExternal;
 
     public ArrayList<Topics> topicsFromDB = new ArrayList<>();
     private ArrayList<Topics> mFoundTopics;
@@ -79,8 +77,8 @@ public class FragmentWorkRecycler extends Fragment {
     }
 
     private void setAdapter() {
-        if (dba.getTopicCountByIdParent(mParentTopicId) > 0) { //work with topics
-            topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
+        if (dbConnExternal.getTopicCountByIdParent(mParentTopicId) > 0) { //work with topics
+            topicsFromDB = dbConnExternal.getTopicByIdParentAlphabet(mParentTopicId);
             setAdapterTopics();
         } else { //works with exp
             new GetAsyncExp().execute();// TODO: 12.07.2017 maybe don't async?
@@ -102,7 +100,7 @@ public class FragmentWorkRecycler extends Fragment {
 ////                                    PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
 ////                                            mFoundTopics.get(position).getText());
 ////                                } else {
-////                                    PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+////                                    PersistantStorage.addProperty(dbConnInner.getTopicById(mParentTopicId).getText(),
 ////                                            mFoundTopics.get(position).getText());
 ////                                }
 //
@@ -158,7 +156,7 @@ public class FragmentWorkRecycler extends Fragment {
     public void onAttach(Context context) {
         workContext = (FragmentActivity) context;
         super.onAttach(context);
-        dba = new DatabaseHandler(context);
+        dbConnExternal = new DatabaseHandlerExternal(context);
     }
 
     @Override
@@ -174,10 +172,10 @@ public class FragmentWorkRecycler extends Fragment {
 
         Log.d("Zig", "begin function refreshData()");
         //get child-topics
-//        topicsFromDB = dba.getTopicByIdParentAlphabet(mParentTopicId);
+//        topicsFromDB = dbConnInner.getTopicByIdParentAlphabet(mParentTopicId);
 
         //get child-expressions
-//        expFromDB = dba.getExpByIdParent(mParentTopicId);
+//        expFromDB = dbConnInner.getExpByIdParent(mParentTopicId);
 
         //clone fromDB -> foundItems
         //cloneItems();
@@ -262,7 +260,7 @@ public class FragmentWorkRecycler extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        dba.close();
+        dbConnExternal.close();
     }
 
 //    public void showListView() {
@@ -293,7 +291,7 @@ public class FragmentWorkRecycler extends Fragment {
 //                                        PersistantStorage.addProperty(Constants.TOPICS_ROOT_NAME,
 //                                                mFoundTopics.get(position).getText());
 //                                    } else {
-//                                        PersistantStorage.addProperty(dba.getTopicById(mParentTopicId).getText(),
+//                                        PersistantStorage.addProperty(dbConnInner.getTopicById(mParentTopicId).getText(),
 //                                                mFoundTopics.get(position).getText());
 //                                    }
 //
@@ -543,7 +541,7 @@ public class FragmentWorkRecycler extends Fragment {
 //
 //        @Override
 //        protected ArrayList<Topics> doInBackground(Void... params) {
-//            return dba.getTopicByIdParentAlphabet(mParentTopicId);
+//            return dbConnInner.getTopicByIdParentAlphabet(mParentTopicId);
 //        }
 //
 //        @Override
@@ -564,7 +562,7 @@ public class FragmentWorkRecycler extends Fragment {
 
         @Override
         protected ArrayList<Expressions> doInBackground(Void... params) {
-            ArrayList<Expressions> items = dba.getExpByIdParent(mParentTopicId);
+            ArrayList<Expressions> items = dbConnExternal.getExpByIdParent(mParentTopicId);
             return items;
         }
 

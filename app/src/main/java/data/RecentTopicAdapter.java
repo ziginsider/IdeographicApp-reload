@@ -1,18 +1,16 @@
 package data;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import io.github.ziginsider.ideographicapp.R;
-import io.github.ziginsider.ideographicapp.WorkActivityRecycler_;
 import model.RecentTopics;
 
 /**
@@ -23,7 +21,7 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
 
     private ArrayList<RecentTopics> recentTopicsList;
     //private int clickedPosition;
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dbConnExternal;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -45,6 +43,7 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
 
     public RecentTopicAdapter(ArrayList<RecentTopics> recentItems) {
         this.recentTopicsList = recentItems;
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
     }
 
     @Override
@@ -54,7 +53,7 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
                 .inflate(R.layout.adapter_recent_topic, parent, false);
 
         //there is programmatically change layout: size, paddings, margin, etc...
-        dba = new DatabaseHandler(parent.getContext());
+//        dbConnExternal = new DatabaseHandlerExternal(parent.getContext());
 
         return new RecentTopicAdapter.ViewHolder(v);
     }
@@ -76,7 +75,7 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
 //            holder.relativeLayout.setBackgroundResource(R.drawable.ripple_bg_exp);
 //        }
 
-        if (dba.getTopicCountByIdParent(holder.idTopic) > 0) {
+        if (dbConnExternal.getTopicCountByIdParent(holder.idTopic) > 0) {
             holder.imageNextItem.setImageResource(R.drawable.ic_chevron_color_right);
         } else {
             holder.imageNextItem.setImageResource(R.drawable.ic_three_circle_green);
@@ -120,7 +119,7 @@ public class RecentTopicAdapter extends RecyclerView.Adapter<RecentTopicAdapter.
 
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        dba.close();
+        dbConnExternal.close();
         super.onDetachedFromRecyclerView(recyclerView);
     }
 }

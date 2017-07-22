@@ -27,104 +27,104 @@ public class AsyncProvider {
         RecentTopics currentRecentTopic;
         int maxTotalRecent = 20;
 
-        InitalDatabaseHandler dba = new InitalDatabaseHandler(context);
-        DatabaseHandler dba_data = new DatabaseHandler(context);
+        DatabaseHandlerInner dbConnInner = new DatabaseHandlerInner(context);
+        DatabaseHandlerExternal dbConnExternal = new DatabaseHandlerExternal(context);
 
-        ArrayList<RecentTopics> recentList = dba.getRecentTopicsList();
+        ArrayList<RecentTopics> recentList = dbConnInner.getRecentTopicsList();
 
         //if the topic is on the recent
-        if (dba.getRecentCountByIdTopic(topicId) > 0) {
+        if (dbConnInner.getRecentCountByIdTopic(topicId) > 0) {
 
-            currentRecentTopic = dba.getRecentTopicByTopicId(topicId);
+            currentRecentTopic = dbConnInner.getRecentTopicByTopicId(topicId);
             currentWeight = currentRecentTopic.getTopicWeight();
-            setWeight = dba.getRecentMaxWeight();
+            setWeight = dbConnInner.getRecentMaxWeight();
 
             for(int i = 0; i < recentList.size(); i++) {
 
                 if (recentList.get(i).getTopicWeight() > currentWeight) {
 
                     //recentList.get(i).downTopicWeight();
-                    dba.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(),
+                    dbConnInner.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(),
                             (recentList.get(i).getTopicWeight() - 1));
 
                 } else if(recentList.get(i).getTopicWeight() == currentWeight) {
 
                     //recentList.get(i).setTopicWeight(setWeight);
-                    dba.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(), setWeight);
+                    dbConnInner.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(), setWeight);
                 }
             }
         } else { //if the topic isn't on the recent
 
 
-            int totalRecent = dba.getTotalRecentTopics();
+            int totalRecent = dbConnInner.getTotalRecentTopics();
             //if it is first recent
             if (totalRecent == 0) {
 
                 currentRecentTopic = new RecentTopics(
-                        dba_data.getTopicById(topicId).getText(),
+                        dbConnExternal.getTopicById(topicId).getText(),
                         topicId,
                         1);
-                dba.addRecentTopic(currentRecentTopic);
+                dbConnInner.addRecentTopic(currentRecentTopic);
 
             } else if (totalRecent < maxTotalRecent) {
 
-                setWeight = dba.getRecentMaxWeight() + 1;
+                setWeight = dbConnInner.getRecentMaxWeight() + 1;
 
                 currentRecentTopic = new RecentTopics(
-                        dba_data.getTopicById(topicId).getText(),
+                        dbConnExternal.getTopicById(topicId).getText(),
                         topicId,
                         setWeight);
-                dba.addRecentTopic(currentRecentTopic);
+                dbConnInner.addRecentTopic(currentRecentTopic);
             } else {
 
                 for(int i = 0; i < recentList.size(); i++) {
 
-                    dba.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(),
+                    dbConnInner.updateTopicWeightByIdTopic(recentList.get(i).getTopicId(),
                             (recentList.get(i).getTopicWeight() - 1));
                 }
 
-                dba.deleteLastRecentTopic();
+                dbConnInner.deleteLastRecentTopic();
 
                 setWeight = maxTotalRecent;
 
                 currentRecentTopic = new RecentTopics(
-                        dba_data.getTopicById(topicId).getText(),
+                        dbConnExternal.getTopicById(topicId).getText(),
                         topicId,
                         setWeight);
-                dba.addRecentTopic(currentRecentTopic);
+                dbConnInner.addRecentTopic(currentRecentTopic);
             }
         }
-        dba.close();
-        dba_data.close();
+        dbConnInner.close();
+        dbConnExternal.close();
     }
 
     public void setStatisticTopic(Context context, int topicId) {
 
-        InitalDatabaseHandler dba_inital = new InitalDatabaseHandler(context);
-        DatabaseHandler dba_data = new DatabaseHandler(context);
+        DatabaseHandlerInner dbConnInner = new DatabaseHandlerInner(context);
+        DatabaseHandlerExternal dbConnExternal = new DatabaseHandlerExternal(context);
 
-        if (dba_inital.isTopicInStatisticList(topicId)) {
+        if (dbConnInner.isTopicInStatisticList(topicId)) {
 
-            dba_inital.upTopicCounterByIdTopic(topicId);
+            dbConnInner.upTopicCounterByIdTopic(topicId);
 
         } else {
             StatisticTopic statisticTopic = new StatisticTopic();
 
-            statisticTopic.setTextTopic(dba_data.getTopicById(topicId).getText());
+            statisticTopic.setTextTopic(dbConnExternal.getTopicById(topicId).getText());
             statisticTopic.setIdTopic(topicId);
             statisticTopic.setCounterTopic(1);
 
-            dba_inital.addStatisticTopic(statisticTopic);
+            dbConnInner.addStatisticTopic(statisticTopic);
         }
-        dba_data.close();
-        dba_inital.close();
+        dbConnExternal.close();
+        dbConnInner.close();
     }
 
     public void setNewCard(Context context) {
-        InitalDatabaseHandler dba_init = new InitalDatabaseHandler(context);
+        DatabaseHandlerInner dbConnInner = new DatabaseHandlerInner(context);
         int newId;
 
-        newId = dba_init.addCardTopic(new CardTopic("Topics", 0));
+        newId = dbConnInner.addCardTopic(new CardTopic("Topics", 0));
 
         PersistantStorage.init(context);
         PersistantStorage.addProperty(Constants.CURRENT_CARD, String.valueOf(newId));
@@ -135,25 +135,25 @@ public class AsyncProvider {
         }
         PersistantStorage.addProperty(Constants.CURRENT_COUNT_CARD, String.valueOf(currentCountCards));
 
-        dba_init.close();
+        dbConnInner.close();
     }
 
     public void updateCardByIdCard(Context context, int idCard, int idTopic) {
-        InitalDatabaseHandler dba_init = new InitalDatabaseHandler(context);
-        DatabaseHandler dba_data = new DatabaseHandler(context);
+        DatabaseHandlerInner dbConnInner = new DatabaseHandlerInner(context);
+        DatabaseHandlerExternal dbConnExternal = new DatabaseHandlerExternal(context);
 
-        dba_init.updateCardTopicByIdCardTopic(idCard,
+        dbConnInner.updateCardTopicByIdCardTopic(idCard,
                 idTopic,
-                dba_data.getTopicNameById(idTopic));
+                dbConnExternal.getTopicNameById(idTopic));
 
-        dba_init.close();
-        dba_data.close();
+        dbConnInner.close();
+        dbConnExternal.close();
     }
 
     public void deleteCardByIdCard(Context context, int idCard) {
-        InitalDatabaseHandler dba_init = new InitalDatabaseHandler(context);
+        DatabaseHandlerInner dbConnInner = new DatabaseHandlerInner(context);
 
-        dba_init.deleteCardTopicByIdCardTopic(idCard);
+        dbConnInner.deleteCardTopicByIdCardTopic(idCard);
 
         int currentCountCards = 1;
         PersistantStorage.init(context);
@@ -162,7 +162,7 @@ public class AsyncProvider {
         }
         PersistantStorage.addProperty(Constants.CURRENT_COUNT_CARD, String.valueOf(currentCountCards));
 
-        dba_init.close();
+        dbConnInner.close();
     }
 }
 

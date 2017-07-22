@@ -21,8 +21,9 @@ import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.Constants;
-import data.DatabaseHandler;
+import data.DatabaseHandlerExternal;
 import data.PersistantStorage;
 import data.ViewPagerAdapter;
 
@@ -47,7 +48,7 @@ public class FragmentSlidingTabs extends Fragment {
     ArrayList<String> listTopicLabels;
     //ArrayList<Integer> listSelectTopicItem;
 
-    private DatabaseHandler dba;
+    private DatabaseHandlerExternal dbConnExternal;
 
     private PersistantStorage storage;
 
@@ -75,7 +76,8 @@ public class FragmentSlidingTabs extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        dba = new DatabaseHandler(context);
+//        dbConnExternal = new DatabaseHandlerExternal(context);
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
     }
 
 //    public int getSelectTopicItemPosition (int positionTab) {
@@ -335,8 +337,8 @@ public class FragmentSlidingTabs extends Fragment {
             textLabels.setText("");
 
 
-            textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
-            textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
+            textNumberOfSubtopics.setText(String.valueOf(dbConnExternal.getTopicCountByIdParent(idTopic)));
+            textNumberOfExp.setText(String.valueOf(dbConnExternal.getExpCountByIdParent(idTopic)));
 
         } else {
 
@@ -354,7 +356,7 @@ public class FragmentSlidingTabs extends Fragment {
             textParentTopicNameBottomSheet.setVisibility(View.VISIBLE);
 
             //labels
-            listTopicLabels = dba.getTopicLabels(idTopic);
+            listTopicLabels = dbConnExternal.getTopicLabels(idTopic);
 
             StringBuilder sb = new StringBuilder();
             for (String s : listTopicLabels) {
@@ -366,10 +368,10 @@ public class FragmentSlidingTabs extends Fragment {
             textLabels.setText(sb);
 
             //parent topic
-            if (dba.getTopicById(idTopic).getParentId() != 0) {
+            if (dbConnExternal.getTopicById(idTopic).getParentId() != 0) {
 
-                textParentTopicNameBottomSheet.setText(dba.getTopicById
-                    (dba.getTopicById(idTopic).getParentId())
+                textParentTopicNameBottomSheet.setText(dbConnExternal.getTopicById
+                    (dbConnExternal.getTopicById(idTopic).getParentId())
                     .getText());
 
             } else {
@@ -377,9 +379,9 @@ public class FragmentSlidingTabs extends Fragment {
                 textParentTopicNameBottomSheet.setText(Constants.TOPICS_ROOT_NAME);
             }
 
-            textTopicNameBottomSheet.setText(dba.getTopicById(idTopic).getText());
-            textNumberOfSubtopics.setText(String.valueOf(dba.getTopicCountByIdParent(idTopic)));
-            textNumberOfExp.setText(String.valueOf(dba.getExpCountByIdParent(idTopic)));
+            textTopicNameBottomSheet.setText(dbConnExternal.getTopicById(idTopic).getText());
+            textNumberOfSubtopics.setText(String.valueOf(dbConnExternal.getTopicCountByIdParent(idTopic)));
+            textNumberOfExp.setText(String.valueOf(dbConnExternal.getExpCountByIdParent(idTopic)));
         }
     }
 
@@ -393,16 +395,16 @@ public class FragmentSlidingTabs extends Fragment {
 
         if (idTopic == 0) {
 
-            storage.init(getContext());
-            storage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
+//            storage.init(getContext());
+//            storage.addProperty(Constants.TOPICS_ROOT_NAME, "nichts");
 
             adapter.addFragment(fragmentWork, Constants.TOPICS_ROOT_NAME, 0);
         } else {
 
-            storage.init(getContext());
-            storage.addProperty(dba.getTopicById(idTopic).getText(), "nichts");
+//            storage.init(getContext());
+//            storage.addProperty(dbConnExternal.getTopicById(idTopic).getText(), "nichts");
 
-            adapter.addFragment(fragmentWork, dba.getTopicById(idTopic).getText(), idTopic);
+            adapter.addFragment(fragmentWork, dbConnExternal.getTopicById(idTopic).getText(), idTopic);
         }
         adapter.notifyDataSetChanged();
         if (adapter.getCount() > 0) tabLayout.setupWithViewPager(viewPager);
@@ -435,7 +437,7 @@ public class FragmentSlidingTabs extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        dba.close();
+//        dbConnExternal.close();
     }
 }
 

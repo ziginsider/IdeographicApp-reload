@@ -21,16 +21,17 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.Constants;
-import data.DatabaseHandler;
-import data.InitalDatabaseHandler;
+import data.DatabaseHandlerExternal;
+import data.DatabaseHandlerInner;
 
 @EActivity(R.layout.activity_work_two)
 public class WorkTwoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    InitalDatabaseHandler dba;
-    DatabaseHandler dbHandler;
+    DatabaseHandlerInner dbConnInner;
+    DatabaseHandlerExternal dbConnExternal;
 
     @ViewById(R.id.toolbar_work)
     Toolbar toolbar;
@@ -53,10 +54,13 @@ public class WorkTwoActivity extends AppCompatActivity
     @AfterViews
     void init() {
 
-        dba = new InitalDatabaseHandler(this); //setup inital db
+//        dbConnInner = new DatabaseHandlerInner(this); //setup inital db
 
         //Setup DB
-        dbHandler = new DatabaseHandler(this);
+//        dbConnExternal = new DatabaseHandlerExternal(this);
+
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -136,13 +140,13 @@ public class WorkTwoActivity extends AppCompatActivity
             ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
             idTopicsPageList.clear();
 
-            int currentId = dba.getIdTopicTopRecentTopics();
+            int currentId = dbConnInner.getIdTopicTopRecentTopics();
 
             idTopicsPageList.add(currentId);
 
             if (currentId != 0) {
                 do {
-                    currentId = dbHandler.getTopicById(currentId).getParentId();
+                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
@@ -206,8 +210,8 @@ public class WorkTwoActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        dba.close();
-        dbHandler.close();
+//        dbConnInner.close();
+//        dbConnExternal.close();
         super.onDestroy();
     }
 }

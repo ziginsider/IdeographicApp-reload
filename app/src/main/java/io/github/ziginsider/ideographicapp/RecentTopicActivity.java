@@ -23,10 +23,11 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import app.AppController;
 import data.AsyncProvider;
 import data.Constants;
-import data.DatabaseHandler;
-import data.InitalDatabaseHandler;
+import data.DatabaseHandlerExternal;
+import data.DatabaseHandlerInner;
 import data.RecentTopicAdapter;
 import data.RecyclerItemClickListener;
 import model.RecentTopics;
@@ -35,8 +36,8 @@ import model.RecentTopics;
 public class RecentTopicActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    InitalDatabaseHandler dba;
-    DatabaseHandler dba_data;
+    DatabaseHandlerInner dbConnInner;
+    DatabaseHandlerExternal dbConnExternal;
     ArrayList<RecentTopics> recentTopicsList;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -66,10 +67,14 @@ public class RecentTopicActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        dba = new InitalDatabaseHandler(this);
-        dba_data = new DatabaseHandler(this);
+//        dbConnInner = new DatabaseHandlerInner(this);
+//        dbConnExternal = new DatabaseHandlerExternal(this);
+
+        dbConnExternal = AppController.getInstance().getSQLiteConnectionExternal();
+        dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
+
         //get all expressions
-        recentTopicsList = dba.getRecentTopicsList();
+        recentTopicsList = dbConnInner.getRecentTopicsList();
 
         // если мы уверены, что изменения в контенте не изменят размер layout-а RecyclerView
         // передаем параметр true - это увеличивает производительность
@@ -100,7 +105,7 @@ public class RecentTopicActivity extends AppCompatActivity
 
                                 idTopicsPageList.add(currentId);
                                 do {
-                                    currentId = dba_data.getTopicById(currentId).getParentId();
+                                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                                     idTopicsPageList.add(currentId);
 
                                 } while (currentId != 0);
@@ -175,13 +180,13 @@ public class RecentTopicActivity extends AppCompatActivity
             ArrayList<Integer> idTopicsPageList = new ArrayList<Integer>();
             idTopicsPageList.clear();
 
-            int currentId = dba.getIdTopicTopRecentTopics();
+            int currentId = dbConnInner.getIdTopicTopRecentTopics();
 
             idTopicsPageList.add(currentId);
 
             if (currentId != 0) {
                 do {
-                    currentId = dba_data.getTopicById(currentId).getParentId();
+                    currentId = dbConnExternal.getTopicById(currentId).getParentId();
                     idTopicsPageList.add(currentId);
 
                 } while (currentId != 0);
@@ -273,8 +278,8 @@ public class RecentTopicActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        dba.close();
-        dba_data.close();
+//        dbConnInner.close();
+//        dbConnExternal.close();
         super.onDestroy();
     }
 }
