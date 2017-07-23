@@ -44,5 +44,7 @@
 
     <color name="defenition">#48494a</color>
     <color name="def_trans">#669999</color>
+    <color name="word_previous_trans">#466953</color>
+
 
 </resources>

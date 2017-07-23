@@ -3,10 +3,10 @@ package data;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
@@ -23,7 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.andreilisun.swipedismissdialog.SwipeDismissDialog;
+import com.tooltip.Tooltip;
 import com.tuyenmonkey.textdecorator.TextDecorator;
+import com.tuyenmonkey.textdecorator.callback.OnTextClickListener;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -48,6 +50,8 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
     private DatabaseHandlerInner dbConnInner;
     String regex = "";
     String target = "";
+
+    int colorWordPreviousTrans;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -95,13 +99,20 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
         dbConnInner = AppController.getInstance().getSQLiteConnectionInner();
         //dbConnInner = new DatabaseHandlerInner(parent.getContext());
 
+        ///////////
+
+        colorWordPreviousTrans = ContextCompat.getColor(parent.getContext(), R.color.word_previous_trans);
+
+        ////////////
+
+
         return new RecyclerExpAdapter.ViewHolder(v);
     }
 
     //refresh recycler item
 
     @Override
-    public void onBindViewHolder(RecyclerExpAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerExpAdapter.ViewHolder holder, final int position) {
 
         final Expressions mCurrentExpItem = mExpList.get(position);
 
@@ -176,76 +187,142 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
         // get (bla-bla-bla)
 //        final String[] determArray = getDetermArray(body);
+
+        // ( )
         final String[] determArray = ParserExp.getStrBetweenStr(body, "\\({1}", "\\){1}", 3);
-//        String[] clickableWordsArray = getClickableWordsArray(body, determArray);
         String[] clickableWordsArray = ParserExp.getPreviousWordsArray(body, determArray, 1);
 
         // delete (bla-bla-bla)
         // String replace;
-
-//        for (int i = 0; i < determArray.length; i++) {
-//            //   replace = "(" + determArray[i] + ")";
-//            body = body.replace("(" + determArray[i] + ")", "");
-//            body = body.replace("  ", " ");
-//        }
         body = ParserExp.replaceArrayStr(body, determArray, "(", ")", "");
-
 
         // ((bla-bla-bla)) replace to (bla-bla-bla)
         body = body.replace("((", "(");
         body = body.replace("))", ")");
 
-        // redacting (bla-bla-bla)
-//        String[] splitArray = body.split("\\(|\\)");
-//        String[] explainArray = new String[3];
-//        for (int i = 0; i < explainArray.length; i++) {
-//            explainArray[i] = "";
-//        }
-//        for (int i = 1, j = 0; i < splitArray.length; i++) {
-//            if (j == 3) {
-//                break;
-//            }
-//            if (i % 2 != 0 && !splitArray[i].isEmpty()) {
-//                explainArray[j++] = "(" + splitArray[i] + ")";
-//            }
-//        }
+        // ( )
         String[] explainArray = ParserExp.getStrBetweenStr(body, "\\(", "\\)", 3);
         explainArray = ParserExp.frameStringArray(explainArray, "(", ")");
 
-        // example: "tra-ta-ta //target targe target// tra-tat-ta"
-        regex = "//"; // // //
-        target = "";
-        int[] posDoubleSlashArray = getPositionsInRegex(regex, body);
-        body = body.replaceAll(regex, target);
-
-
         //transcription [sdfsdfsdfd]
-        regex = "\\[{1}|\\]{1}";  // [ ]
-        int[] posTransArray = getPositionsInRegex(regex, body);
+        String[] transWordsArray = ParserExp.getStrBetweenStr(body, "\\[{1}", "\\]{1}", 3);
 
-        for (int i = 1; i < posTransArray.length; i += 2) {
-            if (posTransArray[i] > 0) {
-                posTransArray[i - 1] = posTransArray[i - 1] + i - 1;
-                posTransArray[i] = posTransArray[i] + i + 1;
-            }
-        }
+        String[] clickableTransArray = ParserExp.getPreviousWordsArray(body, transWordsArray, 1);
+
+        transWordsArray = ParserExp.frameStringArray(transWordsArray, "[", "]");
+
+        body = ParserExp.replaceArrayStr(body, transWordsArray, "", "", "");
+
+        // example: "tra-ta-ta //target targe target// tra-tat-ta"
+        int[] posDoubleSlashArray = ParserExp.getPositionsBetweenStr(body, "//", 6);
+        body = body.replace("//", "");
 
         //get positions " s ", "s/s", "sbd"
-        int[] posSbdArray = getPositionsSbd(body);
+        //int[] posSbdArray = getPositionsSbd(body);
+
+        // final [ ]
+        final String[] finalTransWordsArray = transWordsArray;
 
         TextDecorator
                 .decorate(holder.textBody, body)
-                .setTextColor(android.R.color.holo_blue_light, posSbdArray[0], posSbdArray[1])
-                .setTextColor(android.R.color.holo_blue_light, posSbdArray[2], posSbdArray[3])
-                .setTextColor(android.R.color.holo_blue_light, posSbdArray[4], posSbdArray[5])
+                // sbd
+//                .setTextColor(android.R.color.holo_blue_light, posSbdArray[0], posSbdArray[1])
+//                .setTextColor(android.R.color.holo_blue_light, posSbdArray[2], posSbdArray[3])
+//                .setTextColor(android.R.color.holo_blue_light, posSbdArray[4], posSbdArray[5])
+                // // //
                 .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[0], posDoubleSlashArray[1])
                 .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[2], posDoubleSlashArray[3])
                 .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[4], posDoubleSlashArray[5])
-                .setTextColor(android.R.color.holo_green_dark, posTransArray[0], posTransArray[1])
-                .setTextColor(android.R.color.holo_green_dark, posTransArray[2], posTransArray[3])
-                .setTextColor(android.R.color.holo_green_dark, posTransArray[4], posTransArray[5])
-                .setAbsoluteSize(26, explainArray)
+                // [ ]
+                .setTextColor(android.R.color.holo_green_dark, transWordsArray)
+                //.setTextColor(android.R.color.holo_red_dark, clickableTransArray)
+                // [ ] previous word clickable
+                // 1
+                .makeTextClickable(new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        if (!finalTransWordsArray[0].isEmpty()) {
+                            Tooltip tooltip = new Tooltip.Builder(widget)
+                                    .setText(finalTransWordsArray[0])
+                                    .setGravity(Gravity.TOP)
+                                    .setCornerRadius(8f)
+                                    .setTextColor(Color.WHITE)
+                                    .setPadding(18f)
+                                    .setCancelable(true)
+                                    .setDismissOnClick(true)
+                                    .show();
+                        }
+                    }
+                    @Override
+                    public void updateDrawState(TextPaint ds) {
+                        ds.setColor(colorWordPreviousTrans);
+                        ds.setUnderlineText(false);
+                    }
+                }, clickableTransArray[0])
+//                .makeTextClickable(new OnTextClickListener() {
+//                    @Override
+//                    public void onClick(View view, String text) {
+//                        if (!finalTransWordsArray[0].isEmpty()) {
+//                            Tooltip tooltip = new Tooltip.Builder(view)
+//                                    .setText(finalTransWordsArray[0])
+//                                    .setGravity(Gravity.TOP)
+//                                    .setCornerRadius(8f)
+//                                    .setTextColor(Color.WHITE)
+//                                    .setPadding(18f)
+//                                    .setCancelable(true)
+//                                    .setDismissOnClick(true)
+//                                    .show();
+//                        }
+//                    }
+//                }, false, clickableTransArray[0])
+                // 2
+                .makeTextClickable(new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        if (!finalTransWordsArray[1].isEmpty()) {
+                            Tooltip tooltip = new Tooltip.Builder(widget)
+                                    .setText(finalTransWordsArray[1])
+                                    .setGravity(Gravity.TOP)
+                                    .setCornerRadius(8f)
+                                    .setTextColor(Color.WHITE)
+                                    .setPadding(18f)
+                                    .setCancelable(true)
+                                    .setDismissOnClick(true)
+                                    .show();
+                        }
+                    }
+                    @Override
+                    public void updateDrawState(TextPaint ds) {
+                        ds.setColor(colorWordPreviousTrans);
+                        ds.setUnderlineText(false);
+                    }
+                }, clickableTransArray[1])
+                // 3
+                .makeTextClickable(new ClickableSpan() {
+                    @Override
+                    public void onClick(View widget) {
+                        if (!finalTransWordsArray[2].isEmpty()) {
+                            Tooltip tooltip = new Tooltip.Builder(widget)
+                                    .setText(finalTransWordsArray[2])
+                                    .setGravity(Gravity.TOP)
+                                    .setCornerRadius(8f)
+                                    .setTextColor(Color.WHITE)
+                                    .setPadding(18f)
+                                    .setCancelable(true)
+                                    .setDismissOnClick(true)
+                                    .show();
+                        }
+                    }
+                    @Override
+                    public void updateDrawState(TextPaint ds) {
+                        ds.setColor(colorWordPreviousTrans);
+                        ds.setUnderlineText(false);
+                    }
+                }, clickableTransArray[2])
+                // (( ))
+                //.setAbsoluteSize(26, explainArray)
                 .setTextColor(R.color.defenition, explainArray)
+                // ( )
                 .makeTextClickable(new ClickableSpan() {
                     @Override
                     public void onClick(View widget) {
@@ -268,8 +345,6 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
                                 }
                             });
                         }
-
-
                     }
 
                     @Override
@@ -342,71 +417,51 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
                     }
                 }, clickableWordsArray[2])
+                // build
                 .build();
 
 
+        /* definition area */
         defEn = defEn.trim();
 
+        //replace [[ ]] (( ))
+        defEn = defEn.replace("[[", "((");
+        defEn = defEn.replace("]]", "))");
 
         // get (bla-bla-bla) in def
-        final String[] defArray = getDetermArray(defEn);
-        clickableWordsArray = getClickableWordsArray(defEn, defArray);
-
+        final String[] defArray = ParserExp.getStrBetweenStr(defEn, "\\({1}", "\\){1}", 3);
+        clickableWordsArray = ParserExp.getPreviousWordsArray(defEn, defArray, 1);
 
         // delete (bla-bla-bla) in def
         // String replace;
-        for (int i = 0; i < defArray.length; i++) {
-            defEn = defEn.replace("(" + defArray[i] + ")", "");
-            defEn = defEn.replace("  ", " ");
-        }
-
+        defEn = ParserExp.replaceArrayStr(defEn, defArray, "(", ")", "");
 
         // ((bla-bla-bla)) replace to (bla-bla-bla) in def
         defEn = defEn.replace("((", "(");
         defEn = defEn.replace("))", ")");
 
         // redacting (bla-bla-bla) in def
-        String[] splitArray = defEn.split("\\(|\\)");
-        explainArray = new String[3];
-        for (int i = 0; i < explainArray.length; i++) {
-            explainArray[i] = "";
-        }
-        for (int i = 1, j = 0; i < splitArray.length; i++) {
-            if (j == 3) {
-                break;
-            }
-            if (i % 2 != 0 && !splitArray[i].isEmpty()) {
-                explainArray[j++] = "(" + splitArray[i] + ")";
-            }
-        }
+        explainArray = ParserExp.getStrBetweenStr(defEn, "\\(", "\\)", 3);
+        explainArray = ParserExp.frameStringArray(explainArray, "(", ")");
 
         //transcription [sdfsdfsdfd] in def
-        regex = "\\[{1}|\\]{1}";  // [ ]
-        posTransArray = getPositionsInRegex(regex, defEn);
-
-        for (int i = 1; i < posTransArray.length; i += 2) {
-            if (posTransArray[i] > 0) {
-                posTransArray[i - 1] = posTransArray[i - 1] + i - 1;
-                posTransArray[i] = posTransArray[i] + i + 1;
-            }
-        }
+        transWordsArray = ParserExp.getStrBetweenStr(defEn, "\\[{1}", "\\]{1}", 3);
+        transWordsArray = ParserExp.frameStringArray(transWordsArray, "[", "]");
 
         //get positions " s ", "s/s", "sbd"
-        posSbdArray = getPositionsSbd(defEn);
+        //posSbdArray = getPositionsSbd(defEn);
 
 
         TextDecorator
                 .decorate(holder.textDefEn, defEn)
                 // [ ]
-                .setTextColor(R.color.def_trans, posTransArray[0], posTransArray[1])
-                .setTextColor(R.color.def_trans, posTransArray[2], posTransArray[3])
-                .setTextColor(R.color.def_trans, posTransArray[4], posTransArray[5])
+                .setTextColor(R.color.def_trans, transWordsArray)
                 // somebody
-                .setTextColor(android.R.color.holo_blue_dark, posSbdArray[0], posSbdArray[1])
-                .setTextColor(android.R.color.holo_blue_dark, posSbdArray[2], posSbdArray[3])
-                .setTextColor(android.R.color.holo_blue_dark, posSbdArray[4], posSbdArray[5])
+//                .setTextColor(android.R.color.holo_blue_dark, posSbdArray[0], posSbdArray[1])
+//                .setTextColor(android.R.color.holo_blue_dark, posSbdArray[2], posSbdArray[3])
+//                .setTextColor(android.R.color.holo_blue_dark, posSbdArray[4], posSbdArray[5])
                 //def in def
-                .setAbsoluteSize(26, explainArray)
+                //.setAbsoluteSize(26, explainArray)
                 .setTextColor(R.color.defenition, explainArray)
                 // clickable
                 .makeTextClickable(new ClickableSpan() {
@@ -501,16 +556,35 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
                 .build();
 
 
-
+        /* Russian area */
         holder.textDefRu.setText(defRu.trim());
-        holder.textSynonym.setText(synonym.trim());
 
+        /* Synonym area */
+
+        synonym = synonym.trim();
+
+        // example: "tra-ta-ta //target targe target// tra-tat-ta"
+        posDoubleSlashArray = ParserExp.getPositionsBetweenStr(synonym, "//", 6);
+        synonym = synonym.replace("//", "");
+
+//        holder.textSynonym.setText(synonym.trim());
+
+        TextDecorator.decorate(holder.textSynonym, synonym)
+                // // //
+                .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[0], posDoubleSlashArray[1])
+                .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[2], posDoubleSlashArray[3])
+                .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[4], posDoubleSlashArray[5])
+                // build
+                .build();
+
+
+        //copy to clipboard
         holder.itemView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
                 ClipboardManager clipboard = (ClipboardManager) view.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText(mCurrentExpItem.getExpText(), mCurrentExpItem.getExpText());
+                ClipData clip = ClipData.newPlainText(holder.textBody.getText(), holder.textBody.getText());
                 clipboard.setPrimaryClip(clip);
                 //set the position
                 //clickedPosition = position;

@@ -65,4 +65,6 @@ dependencies {
     compile 'com.tuyenmonkey:text-decorator:1.0.0'
 
     compile 'com.github.andreilisun:swipedismissdialog:0.1'
+
+    compile 'com.github.vihtarb:tooltip:0.1.9'
 }

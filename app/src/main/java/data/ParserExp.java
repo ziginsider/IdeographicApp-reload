@@ -93,7 +93,7 @@ public class ParserExp {
 
         String[] splitArray = text.split(regex);
 
-        if (splitArray.length < 3) {
+        if (splitArray.length < 2) {
             String[] string = new String[1];
             string[0] = "";
             return string;
@@ -213,6 +213,67 @@ public class ParserExp {
             text = text.replace(firstFrame + targetArray[i] + lastFrame, replacement);
         }
         return text.replace("  ", " ");
+    }
+
+    public static int[] getPositionsBetweenStr(String text, String regex, int limit) {
+
+        String[] splitArray = text.split(regex);
+
+        int[] posArray = new int[limit];
+
+        for (int j = 0; j < limit; j++) {
+            posArray[j] = 0;
+        }
+
+        return getPositionOdd(splitArray, posArray, limit);
+    }
+
+    public static int[] getPositionsBetweenStr(String text, String regex) {
+
+        String[] splitArray = text.split(regex);
+
+        int limit=2;
+
+        if (splitArray.length > 2) {
+            limit = splitArray.length - 1;
+        }
+
+        int[] posArray = new int[splitArray.length];
+
+        for (int j = 0; j < limit; j++) {
+            posArray[j] = 0;
+        }
+
+        return getPositionOdd(splitArray, posArray, limit);
+    }
+
+    private static int[] getPositionOdd(String[] splitArray, int[] posArray, int limit) {
+        int offset = 0;
+        int pos = 0;
+
+        for (int i = 0; i < splitArray.length; i++) {
+
+            if (pos >= limit) {
+                break;
+            }
+
+            if (splitArray[i].length() == 0) {
+                continue;
+            }
+            if (i == 0) {
+                offset += splitArray[i].length();
+                continue;
+            }
+            if (i % 2 == 0) {
+                offset += splitArray[i].length();
+            } else {
+                posArray[pos] = offset;
+                posArray[pos + 1] = offset + splitArray[i].length();
+                offset = posArray[pos + 1];
+                pos += 2;
+            }
+        }
+        return posArray;
     }
 
 }
