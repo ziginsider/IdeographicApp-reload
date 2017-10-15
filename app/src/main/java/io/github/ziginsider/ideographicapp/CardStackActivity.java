@@ -135,8 +135,8 @@ public class CardStackActivity extends BaseCardStackActivity {
                         (StackCardLayoutManager.VERTICAL,
                                 false,
                                 new StackCardPostLayout());
-        stackCardLayoutManager.setNumberOrder(StackCardLayoutManager.NEGATIVE_ORDER);
-        stackCardLayoutManager.setStackOrder(StackCardLayoutManager.OUT_STACK_ORDER);
+        stackCardLayoutManager.setNumberOrder(StackCardLayoutManager.POSITIVE_ORDER);
+        stackCardLayoutManager.setStackOrder(StackCardLayoutManager.IN_STACK_ORDER);
         RecyclerViewCardStackAdapter adapter = new RecyclerViewCardStackAdapter(data);
 
         initRecyclerView(recyclerView, stackCardLayoutManager, adapter);

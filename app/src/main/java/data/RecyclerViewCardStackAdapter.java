@@ -41,6 +41,11 @@ public class RecyclerViewCardStackAdapter extends RecyclerView.Adapter<RecyclerV
     Context context;
 
     @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    @Override
     public void onSwip(RecyclerView.ViewHolder viewHolder, int position) {
         remove(position);
     }

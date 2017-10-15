@@ -567,8 +567,6 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
         posDoubleSlashArray = ParserExp.getPositionsBetweenStr(synonym, "//", 6);
         synonym = synonym.replace("//", "");
 
-//        holder.textSynonym.setText(synonym.trim());
-
         TextDecorator.decorate(holder.textSynonym, synonym)
                 // // //
                 .setTextStyle(Typeface.ITALIC, posDoubleSlashArray[0], posDoubleSlashArray[1])
@@ -646,161 +644,69 @@ public class RecyclerExpAdapter extends RecyclerView.Adapter<RecyclerExpAdapter.
 
     }
 
-    private String[] getClickableWordsArray(String body, String[] determArray) {
 
-        String[] clickArray = new String[3];
-        clickArray[0] = "";
-        clickArray[1] = "";
-        clickArray[2] = "";
-
-        int offset;
-        String word = "";
-
-        for (int i = 0; i < determArray.length; i++) {
-
-            if (determArray[i].isEmpty()) {
-                continue;
-            }
-
-            offset = body.indexOf(determArray[i]);
-            if (offset > 1) {
-                offset -= 2;
-            } else {
-                continue;
-            }
-
-            // the next char after the clickable word
-            if (body.charAt(offset) == ' ') {
-                for (int j = offset - 1; j >= 0; j--) {
-
-                    if (body.charAt(j) == ' ' && j == offset - 1) {
-                        continue;
-                    }
-                    if (body.charAt(j) != ' ') {
-                        word += body.charAt(j);
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            clickArray[i] = new StringBuilder(word).reverse().toString();
-        }
-
-        return clickArray;
-    }
-
-    private String[] getDetermArray(String body) {
-        String[] determArray = new String[3];
-        determArray[0] = "";
-        determArray[1] = "";
-        determArray[2] = "";
-
-        regex = "\\({1}|\\){1}";
-        String[] splitArray = body.split(regex);
-
-        for (int i = 1, j = 0; i < splitArray.length; i++) {
-            if (j == 3) break;
-            if (i % 2 != 0 && !splitArray[i].isEmpty()) {
-                determArray[j++] = splitArray[i];
-            }
-        }
-        return determArray;
-    }
-
-    private int[] getPositionsInRegex(String regex, String text) {
-        int[] posArray = new int[6];
-
-        for (int j = 0; j < posArray.length; j++) {
-            posArray[j] = 0;
-        }
-
-        String[] splitArray = text.split(regex);
-        int offset = 0;
-        int pos = 0;
-
-        for (int i = 0; i < splitArray.length; i++) {
-            if (splitArray[i].length() == 0) {
-                continue;
-            }
-            if (i == 0) {
-                offset += splitArray[i].length();
-                continue;
-            }
-            if (i % 2 == 0) {
-                offset += splitArray[i].length();
-            } else {
-                posArray[pos] = offset;
-                posArray[pos + 1] = offset + splitArray[i].length();
-                offset = posArray[pos + 1];
-                pos += 2;
-            }
-        }
-        return posArray;
-    }
-
-    private int[] getPositionsSbd(String body) {
-        int[] number = new int[6];
-        for (int j = 0; j < number.length; j++) {
-            number[j] = 0;
-        }
-
-        int offset = 0;
-        int offsetSS = 0;
-        int offsetSbd = 0;
-        int lastOffset = body.length() - 1;
-        int sFirst;
-        int sLast;
-        int sMiddle;
-
-        for (int i = 0; i < number.length; i += 2) {
-
-            sFirst = body.indexOf("s ", offset);
-            if (sFirst == 0) {
-                number[i] = 0;
-                number[i + 1] = 1;
-                offset += 2;
-                continue;
-            }
-
-            sLast = body.lastIndexOf(" s", lastOffset);
-            if (sLast == body.length() - 2) {
-                number[i] = sLast + 1;
-                number[i + 1] = sLast + 2;
-                lastOffset -= 2;
-                continue;
-            }
-
-            sMiddle = body.indexOf(" s ", offset);
-            if (sMiddle > -1) {
-                number[i] = sMiddle + 1;
-                number[i + 1] = sMiddle + 2;
-                offset = sMiddle + 3;
-                continue;
-            }
-
-            sMiddle = body.indexOf("s/s", offsetSS);
-            if (sMiddle > -1) {
-                if (sMiddle > 0) {
-                    if (body.charAt(sMiddle - 1) != ' ') {
-                        continue;
-                    }
-                }
-                number[i] = sMiddle;
-                number[i + 1] = sMiddle + 3;
-                offsetSS = sMiddle + 4;
-                continue;
-            }
-
-            sMiddle = body.indexOf("sbd", offsetSbd);
-            if (sMiddle > -1) {
-                number[i] = sMiddle;
-                number[i + 1] = sMiddle + 3;
-                offsetSbd = sMiddle + 4;
-            }
-        }
-        return number;
-    }
+//    private int[] getPositionsSbd(String body) {
+//        int[] number = new int[6];
+//        for (int j = 0; j < number.length; j++) {
+//            number[j] = 0;
+//        }
+//
+//        int offset = 0;
+//        int offsetSS = 0;
+//        int offsetSbd = 0;
+//        int lastOffset = body.length() - 1;
+//        int sFirst;
+//        int sLast;
+//        int sMiddle;
+//
+//        for (int i = 0; i < number.length; i += 2) {
+//
+//            sFirst = body.indexOf("s ", offset);
+//            if (sFirst == 0) {
+//                number[i] = 0;
+//                number[i + 1] = 1;
+//                offset += 2;
+//                continue;
+//            }
+//
+//            sLast = body.lastIndexOf(" s", lastOffset);
+//            if (sLast == body.length() - 2) {
+//                number[i] = sLast + 1;
+//                number[i + 1] = sLast + 2;
+//                lastOffset -= 2;
+//                continue;
+//            }
+//
+//            sMiddle = body.indexOf(" s ", offset);
+//            if (sMiddle > -1) {
+//                number[i] = sMiddle + 1;
+//                number[i + 1] = sMiddle + 2;
+//                offset = sMiddle + 3;
+//                continue;
+//            }
+//
+//            sMiddle = body.indexOf("s/s", offsetSS);
+//            if (sMiddle > -1) {
+//                if (sMiddle > 0) {
+//                    if (body.charAt(sMiddle - 1) != ' ') {
+//                        continue;
+//                    }
+//                }
+//                number[i] = sMiddle;
+//                number[i + 1] = sMiddle + 3;
+//                offsetSS = sMiddle + 4;
+//                continue;
+//            }
+//
+//            sMiddle = body.indexOf("sbd", offsetSbd);
+//            if (sMiddle > -1) {
+//                number[i] = sMiddle;
+//                number[i + 1] = sMiddle + 3;
+//                offsetSbd = sMiddle + 4;
+//            }
+//        }
+//        return number;
+//    }
 
     @Override
     public int getItemCount() {
